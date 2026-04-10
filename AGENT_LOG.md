@@ -195,3 +195,25 @@
 - structlog configured to WARNING level to suppress info-level pipeline logging in notebook cells
 - Plotly charts shown inline (no PNG export attempted — avoids kaleido dependency)
 - Build script (`_build_walkthrough.py`) used to create notebook programmatically, then deleted after execution
+
+## Phase 8: Integration & Output Tests [Agent: test coverage]
+
+**Status:** Complete
+**Files created:**
+- `tests/test_output.py` — 23 tests covering charts (Plotly figure validation), reports (Markdown/HTML content assertions), and export (CSV/JSON structure verification)
+- `tests/test_cli.py` — 8 tests using `typer.testing.CliRunner`: version flags, analyze/drift/report commands with sample data, error handling for invalid paths
+- `tests/test_integration.py` — 5 end-to-end tests: full pipeline (CSV → exposure → demographics → urgency → report → export), quarterly drift pipeline, cross-module consistency checks
+
+**Test Results:** 98/98 passing (62 existing + 36 new)
+**Coverage:** 82% overall (target: 80%)
+- Output modules: charts 86%, export 100%, report 98%
+- CLI: 93% (dashboard subprocess launch excluded)
+- Analysis modules: 93-100% (unchanged)
+- Remaining uncovered: dashboard/app.py (Streamlit, 0%), parser edge paths, exceptions
+
+**Decisions:**
+- No modifications to `src/` — tests only
+- No new fixtures needed in `conftest.py` — existing fixtures sufficient for all test scenarios
+- CLI tests use real sample data files for realistic integration coverage
+- Drift tests use fixed RNG seeds for reproducibility
+- Used `tmp_path` pytest fixture for all file I/O tests (automatic cleanup)
