@@ -49,6 +49,27 @@ class TestExposureHeatmap:
         fig = exposure_heatmap(sample_roles, sample_scores, title="Custom")
         assert fig.layout.title.text == "Custom"
 
+    def test_metric_theoretical(
+        self, sample_roles: list[Role], sample_scores: list[ExposureScore]
+    ) -> None:
+        fig = exposure_heatmap(sample_roles, sample_scores, metric="theoretical")
+        assert isinstance(fig, go.Figure)
+        assert fig.layout.xaxis.title.text == "Theoretical Exposure Score"
+
+    def test_metric_observed(
+        self, sample_roles: list[Role], sample_scores: list[ExposureScore]
+    ) -> None:
+        fig = exposure_heatmap(sample_roles, sample_scores, metric="observed")
+        assert isinstance(fig, go.Figure)
+        assert fig.layout.xaxis.title.text == "Observed Exposure Score"
+
+    def test_metric_blended(
+        self, sample_roles: list[Role], sample_scores: list[ExposureScore]
+    ) -> None:
+        fig = exposure_heatmap(sample_roles, sample_scores, metric="blended")
+        assert isinstance(fig, go.Figure)
+        assert fig.layout.xaxis.title.text == "Blended Exposure Score"
+
 
 class TestDriftSparklines:
     def test_returns_plotly_figure(self) -> None:

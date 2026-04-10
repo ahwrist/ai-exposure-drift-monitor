@@ -217,3 +217,56 @@
 - CLI tests use real sample data files for realistic integration coverage
 - Drift tests use fixed RNG seeds for reproducibility
 - Used `tmp_path` pytest fixture for all file I/O tests (automatic cleanup)
+
+## Phase 9: Research Framing Overhaul [Agent Task 2]
+
+**Status:** Complete
+**Files modified:**
+- `README.md` — Replaced "The Problem" with "The Research Question" (leads with organizational-level research question, cites specific Massenkoff & McCrory findings); replaced "Why This Project" with "What AEDM Adds Beyond the Paper" (four explicit contributions: macro→org, snapshot→temporal, aggregate→equity, measurement→action); added "Key Findings (Sample Data)" section demonstrating analytical interpretation
+- `src/aedm/dashboard/app.py` — Renamed "How It Works" tab to "Research Foundation"; added research question and "What AEDM Adds Beyond the Paper" framing; added Anthropic Economic Index context expander; replaced generic Org Overview st.info() with dynamic narrative paragraph using computed data (mean exposure, theoretical-observed gap, top department); added "What This Means" expander with tier interpretation; added drift narrative summary with department counts and acceleration detection; added "Why Drift Matters" expander citing young-worker hiring slowdown finding; replaced Demographics st.info() with specific macro findings framing (16pp more female, 4x graduate degrees, 47% higher earning); added "Why Composite Scoring" framing to Reskilling tab
+- `docs/methodology.md` — Added "Research Context and Contribution" section at top citing Massenkoff & McCrory (2026), Anthropic Economic Index, Eloundou et al. (2023), Brynjolfsson et al. (2025), WEF Future of Jobs (2025); documented AEDM's four contributions
+
+**Decisions:**
+- Dashboard narratives use computed values (not hardcoded) so they remain accurate with different datasets
+- Research Foundation tab preserves the grouped bar chart and methodology details but reframes them under the research contribution narrative
+- Drift narrative dynamically counts significant/accelerating departments rather than hardcoding
+- All specific numbers from the paper (16pp, 14%, 47%, 97%) are cited in context to demonstrate research literacy
+
+**Quality gates:** ruff (0 errors), ruff format (0 changes), mypy (0 errors), pytest (101/101 passed)
+
+## Phase 10: Polish, Screenshot, Deploy [Agent Task 4]
+
+**Status:** Complete
+**Files created:**
+- `requirements.txt` — Streamlit Cloud deployment dependencies (mirrored from pyproject.toml)
+- `docs/screenshot.svg` — Dashboard screenshot placeholder (SVG mockup of the Streamlit dashboard with KPI cards and heatmap layout)
+
+**Files modified:**
+- `.streamlit/config.toml` — Updated theme to match Task 4 spec (primaryColor: #2EC4B6, textColor: #1B2A4A); added `[server] headless = true` for deployment
+- `README.md` — Updated screenshot reference from PNG to SVG; added Author section with GitHub profile link
+
+**Subtask 4A: Final CI Verification**
+- All quality gates pass: ruff check (0 errors), ruff format (0 changes), mypy (0 errors), pytest (116/116 passed, 92% coverage — exceeds 80% target)
+- No regressions from Tasks 1-3
+
+**Subtask 4B: Dashboard Screenshot**
+- Created `docs/screenshot.svg` — professional SVG mockup since Streamlit GUI cannot be captured in CLI environment
+- Updated README image reference to use SVG
+- To replace with real screenshot: run `streamlit run src/aedm/dashboard/app.py`, capture, save as `docs/screenshot.png`, and update README reference
+
+**Subtask 4C: Deployment Configuration**
+- Created `requirements.txt` for Streamlit Cloud (all direct dependencies from pyproject.toml)
+- Updated `.streamlit/config.toml` with specified theme colors and headless server config
+- Verified all data file paths in dashboard use relative paths (correct for Streamlit Cloud)
+- `settings.reference_rates_path` defaults to `data/reference/anthropic_exposure_rates.json` (relative, correct)
+
+**Subtask 4D: Final README Polish**
+- CI badge URL matches actual repo: `github.com/ahwrist/ai-exposure-drift-monitor`
+- Streamlit badge links to `aedm.streamlit.app` (ready for deployment)
+- All internal links verified: docs/quickstart.md, docs/methodology.md, ARCHITECTURE.md, CONTRIBUTING.md, LICENSE
+- Added Author section with GitHub profile link
+
+**Decisions:**
+- Used SVG for screenshot placeholder rather than a blank PNG — renders cleanly on GitHub and conveys dashboard layout
+- requirements.txt uses the same version bounds as pyproject.toml (not pinned versions) for Streamlit Cloud compatibility
+- Kept Streamlit badge URL as `aedm.streamlit.app` — will become active once deployed

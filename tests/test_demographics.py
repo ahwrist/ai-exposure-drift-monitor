@@ -8,6 +8,7 @@ from aedm.analysis.demographics import (
     analyze_all_disparities,
     analyze_education_disparity,
     analyze_gender_disparity,
+    analyze_intersectional_disparities,
     analyze_pay_band_disparity,
 )
 from aedm.analysis.exposure import compute_org_exposure
@@ -174,3 +175,87 @@ class TestAllDisparities:
         scores = compute_org_exposure(roles, rates)
         segments = analyze_all_disparities(roles, scores)
         assert len(segments) > 0
+
+
+class TestIntersectionalDisparities:
+    """Tests for 2-way intersectional analysis."""
+
+    def test_gender_x_education(
+        self, sample_roles: list[Role], sample_scores: list[ExposureScore]
+    ) -> None:
+        segments = analyze_intersectional_disparities(
+            sample_roles, sample_scores, "gender", "education"
+        )
+        assert isinstance(segments, list)
+        for s in segments:
+            assert s.segment_type == "gender_x_education"
+            assert "\u00d7" in s.segment_value
+
+    def test_gender_x_pay_band(
+        self, sample_roles: list[Role], sample_scores: list[ExposureScore]
+    ) -> None:
+        segments = analyze_intersectional_disparities(
+            sample_roles, sample_scores, "gender", "pay_band"
+        )
+        assert isinstance(segments, list)
+        for s in segments:
+            assert s.segment_type == "gender_x_pay_band"
+
+    def test_education_x_pay_band(
+        self, sample_roles: list[Role], sample_scores: list[ExposureScore]
+    ) -> None:
+        segments = analyze_intersectional_disparities(
+            sample_roles, sample_scores, "education", "pay_band"
+        )
+        assert isinstance(segments, list)
+        for s in segments:
+            assert s.segment_type == "education_x_pay_band"
+
+    def test_small_n_filtered_out(self) -> None:
+        """Cross-segments with fewer than min_headcount should be excluded."""
+        roles = [
+            Role(
+                role_id="A",
+                title="Solo",
+                soc_code="15-1252",
+                headcount=3,
+                gender_pct_female=0.5,
+                education_mode="Master",
+                median_salary=100000,
+            ),
+        ]
+        scores = [
+            ExposureScore(
+                role_id="A",
+                theoretical=0.5,
+                observed=0.3,
+                blended=0.4,
+                tier=ExposureTier.MODERATE,
+                soc_major_group="15-0000",
+            ),
+        ]
+        segments = analyze_intersectional_disparities(
+            roles, scores, "gender", "education", min_headcount=5
+        )
+        # 3 headcount * 0.5 = 1.5 per gender segment, below threshold of 5
+        assert len(segments) == 0
+
+    def test_disparity_ratio_computed(
+        self, sample_roles: list[Role], sample_scores: list[ExposureScore]
+    ) -> None:
+        segments = analyze_intersectional_disparities(
+            sample_roles, sample_scores, "gender", "education", min_headcount=1
+        )
+        for s in segments:
+            assert s.disparity_ratio > 0
+            assert s.mean_exposure >= 0
+            assert s.headcount >= 1
+
+    def test_with_sample_data(self, sample_csv_path: Path, reference_path: Path) -> None:
+        roles = parse_csv(sample_csv_path)
+        rates = load_reference_rates(reference_path)
+        scores = compute_org_exposure(roles, rates)
+        segments = analyze_intersectional_disparities(roles, scores, "gender", "education")
+        assert len(segments) > 0
+        types = {s.segment_type for s in segments}
+        assert "gender_x_education" in types

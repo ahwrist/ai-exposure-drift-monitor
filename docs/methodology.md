@@ -4,6 +4,44 @@ This document describes the analytical methods used by AEDM. It is written for a
 
 ---
 
+## Research Context and Contribution
+
+AEDM is situated within a rapidly developing body of research on AI's labor market effects. The tool operationalizes findings from this literature into organizational measurement.
+
+### Foundational Framework
+
+**Massenkoff & McCrory (2026), "Labor Market Impacts of AI: A New Measure and Early Evidence."** This Anthropic research paper provides the core framework AEDM builds on. It introduces two complementary measures of AI exposure — theoretical (what LLMs *could* do) and observed (what they *are* doing) — and documents the substantial gap between them across all 22 SOC major groups. Key findings that AEDM operationalizes:
+
+- 97% of observed Claude tasks fall into categories rated as theoretically feasible, yet actual coverage remains far below theoretical ceilings
+- Top-exposure-quartile workers are 16pp more female, 11pp more white, nearly 2x more likely Asian, hold graduate degrees at 17.4% vs. 4.5%, and earn 47% more
+- No systematic unemployment increase, but hiring of 22-25 year olds in exposed occupations slowed ~14% (half a percentage point per month in job-finding rate)
+- BLS projections: occupations with higher exposure grow 0.6pp less per 10-point coverage increase
+
+**Anthropic Economic Index (March 2026).** Provides the real-world usage data that grounds the "observed" half of AEDM's exposure scores. Key patterns: high-tenure users (6+ months) show 10% higher success rates and are 7pp more likely to use Claude for work; Computer and Mathematical occupations account for 35% of Claude.ai conversations; business automation workflows doubled while average task value declined from $49.30 to $47.90 as adoption broadened.
+
+### Theoretical Foundations
+
+**Eloundou et al. (2023), "GPTs are GPTs: An Early Look at the Labor Market Impact Potential of Large Language Models."** Introduces the beta framework AEDM inherits for theoretical exposure: tasks are rated on whether LLMs can complete them at 2x speed, where beta=1 indicates LLM alone, beta=0.5 with complementary tools, and beta=0 for infeasible tasks. Massenkoff & McCrory extended this framework using O\*NET task inventories.
+
+### Empirical Context
+
+**Brynjolfsson, Chandar & Chen (2025).** Combined AI task-level exposure measures with ADP employment data to estimate early labor market effects, providing some of the first large-scale empirical evidence connecting AI capability to employment outcomes.
+
+**World Economic Forum (2025), Future of Jobs Report.** Found that 63% of employers cite skills gaps as the primary barrier to AI-driven transformation — the demand signal that motivates AEDM's reskilling urgency scoring.
+
+### AEDM's Contribution
+
+The literature establishes *that* AI exposure is distributed unevenly across occupations and demographics. What it does not provide is:
+
+1. **Organizational-level measurement** — translating economy-wide SOC rates to a specific workforce
+2. **Temporal tracking** — detecting whether exposure is accelerating within an organization over time
+3. **Equity analysis at the organizational level** — testing whether macro demographic patterns hold within a specific role mix
+4. **Actionable prioritization** — connecting measurement to workforce investment decisions via composite urgency scoring
+
+AEDM addresses all four gaps, using statistical methods (CUSUM changepoint detection, permutation testing, composite scoring) that are appropriate for the short time series and moderate sample sizes typical of organizational workforce data.
+
+---
+
 ## 1. Exposure Index Construction
 
 ### What It Measures

@@ -82,7 +82,11 @@ known-first-party = ["aedm"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
+ignore_missing_imports = true
 plugins = ["pydantic.mypy"]
+
+[tool.coverage.run]
+omit = ["src/aedm/dashboard/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

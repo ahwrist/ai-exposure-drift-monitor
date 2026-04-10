@@ -37,6 +37,7 @@ TIER_COLORS = {
 def exposure_heatmap(
     roles: list[Role],
     scores: list[ExposureScore],
+    metric: str = "blended",
     title: str = "AI Exposure by Department and Role",
 ) -> go.Figure:
     """Create a department × exposure heatmap.
@@ -44,6 +45,7 @@ def exposure_heatmap(
     Args:
         roles: List of Role objects.
         scores: Corresponding ExposureScore objects.
+        metric: Which score to display — "blended", "theoretical", or "observed".
         title: Chart title.
 
     Returns:
@@ -60,7 +62,8 @@ def exposure_heatmap(
         dept = role.department
         if dept not in dept_data:
             dept_data[dept] = []
-        dept_data[dept].append((role.title, score.blended, role.headcount))
+        score_value: float = getattr(score, metric, score.blended)
+        dept_data[dept].append((role.title, score_value, role.headcount))
 
     # Sort departments by mean exposure
     dept_means = {dept: sum(s for _, s, _ in data) / len(data) for dept, data in dept_data.items()}
@@ -99,7 +102,7 @@ def exposure_heatmap(
 
     fig.update_layout(
         title=title,
-        xaxis_title="Blended Exposure Score",
+        xaxis_title=f"{metric.title()} Exposure Score",
         xaxis=dict(range=[0, 1], tickformat=".0%"),
         yaxis=dict(autorange="reversed"),
         height=max(400, len(sorted_depts) * 120),

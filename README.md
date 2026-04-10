@@ -12,19 +12,21 @@ Operationalizes Anthropic's AI labor market exposure framework into a workforce 
 
 ---
 
-## The Problem
+## The Research Question
 
-Anthropic's March 2026 research paper, "Labor Market Impacts of AI: A New Measure and Early Evidence" (Massenkoff & McCrory), revealed a striking finding: **theoretical AI exposure far exceeds observed adoption across every occupation group.** Computer and Mathematical occupations show 94% theoretical exposure but only 33% observed exposure. This gap — the "uncovered area" — represents tasks AI *could* automate but hasn't yet.
+> **At the organizational level, how is the gap between theoretical AI capability and actual adoption distributed across roles, departments, and demographic segments — and how can organizations detect when that gap is closing before displacement becomes visible?**
 
-The implications are enormous. The Brookings Institution describes AI labor market research as being in its "first inning," yet the World Economic Forum's 2025 Future of Jobs Report found that 63% of employers already cite skills gaps as the top barrier to transformation. Meanwhile, SHRM reports that 92% of CHROs expect further AI integration into their workforce — but lack the measurement tools to plan for it.
+Massenkoff & McCrory's March 2026 paper, *"Labor Market Impacts of AI: A New Measure and Early Evidence,"* establishes the macro-level framework: theoretical AI exposure (what LLMs *could* do, per Eloundou et al.'s beta ratings of O\*NET tasks) far exceeds observed adoption (what organizations are *actually* automating, measured via the Anthropic Economic Index). Across all 22 SOC major groups, 97% of observed Claude tasks fall into categories rated as theoretically feasible — yet actual coverage remains far below theoretical ceilings.
 
-Research tells us AI is reshaping the workforce. But no organization has operational tooling to measure their specific exposure, track how it's changing, or prioritize where to invest in reskilling. AEDM bridges that gap.
+But the paper explicitly leaves open the organizational question. Economy-wide rates tell a CHRO nothing about *their* workforce. The paper's demographic findings — that top-exposure-quartile workers are 16 percentage points more female, 11pp more white, nearly 2x more likely Asian, hold graduate degrees at 17.4% vs. 4.5%, and earn 47% more — describe macro patterns that may or may not hold within any given organization. And crucially, there is no longitudinal tracking: the paper provides a snapshot, not a trajectory.
+
+AEDM fills that gap. It operationalizes the Massenkoff & McCrory framework at the organizational level, adding the temporal and equity dimensions the original research calls for but does not provide.
 
 ## The Solution
 
 AEDM takes the theoretical + observed exposure framework from Anthropic's research and operationalizes it for your specific organization. Point it at a CSV of your job roles and get back:
 
-![Dashboard Screenshot](docs/screenshot.png)
+![Dashboard Screenshot](docs/screenshot.svg)
 
 - **Exposure scores** per role, department, and org-wide
 - **Drift detection** showing where exposure is accelerating
@@ -39,9 +41,23 @@ $ aedm analyze --input roles.csv --output report/
 $ aedm dashboard --input roles.csv
 ```
 
-## Why This Project
+## What AEDM Adds Beyond the Paper
 
-AEDM was built to bridge the gap between Anthropic's groundbreaking AI labor market research and the operational tools organizations need to act on it. It demonstrates a **research-to-tool pipeline** — taking peer-reviewed findings about AI exposure and drift and turning them into actionable workforce intelligence. The entire project was built using **agentic development with Claude Code**, following a strict CLAUDE.md-driven build order that ensures reproducibility and architectural coherence.
+AEDM makes four contributions that extend the original research into operational territory:
+
+1. **Macro → Organizational translation.** The paper provides economy-wide exposure rates by SOC code. AEDM maps your specific roles to that framework, revealing how *your* workforce — not the national average — is positioned relative to AI capability.
+
+2. **Snapshot → Temporal tracking.** The paper is cross-sectional. AEDM adds a longitudinal dimension via CUSUM changepoint detection and linear trend analysis on quarterly exposure data, surfacing *drift* — are your exposure rates accelerating, decelerating, or stable?
+
+3. **Aggregate → Equity lens.** The paper shows macro-level demographic skew. AEDM applies the same analysis within your organization, testing whether your specific role mix replicates or departs from economy-wide patterns of disproportionate exposure by gender, education, and pay band.
+
+4. **Measurement → Action.** The paper measures; AEDM prescribes. Composite urgency scoring connects exposure measurement to workforce strategy by weighting exposure level, drift velocity, headcount at risk, and reskilling difficulty.
+
+## Key Findings (Sample Data)
+
+Running AEDM against a synthetic 200-role organization reveals patterns consistent with Massenkoff & McCrory's macro findings: ~50% mean blended exposure with a substantial theoretical-observed gap, exposure concentrated in IT, Engineering, and R&D departments, and disproportionate impact on higher-educated and higher-paid segments. The drift analysis across four quarterly snapshots identifies departments where exposure is statistically accelerating — precisely the early-warning signal the original research framework is designed to enable but does not itself provide.
+
+These patterns illustrate the tool's analytical value: macro research establishes *that* AI exposure is unevenly distributed; AEDM shows *where* and *how fast* within a specific organization.
 
 ## Quick Start
 
@@ -131,6 +147,10 @@ This project was built using **CLAUDE.md-driven agentic development** with Claud
 - **Agent memory pattern** — AGENT_LOG.md tracks decisions across sessions for continuity
 - **Statistical rigor over ML complexity** — CUSUM, permutation tests, and composite scoring rather than black-box models
 - **Measurement-first design** — Every output is designed to be presented to a CHRO, not just a data scientist
+
+## Author
+
+**Andrew Wrist** — [GitHub](https://github.com/ahwrist)
 
 ## Contributing
 
