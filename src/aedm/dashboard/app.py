@@ -28,6 +28,7 @@ from aedm.output.charts import (
     exposure_heatmap,
     urgency_matrix,
 )
+from aedm.output.export import scores_to_dataframe
 
 # Page config
 st.set_page_config(
@@ -38,14 +39,26 @@ st.set_page_config(
 
 
 @st.cache_data
-def load_data(
+def load_raw_data(
     input_path: str,
     reference_path: str,
 ) -> tuple:  # type: ignore[type-arg]
-    """Load and compute all analysis data."""
+    """Load raw roles and reference rates (weight-independent)."""
     roles = parse_csv(Path(input_path))
     rates = load_reference_rates(Path(reference_path))
-    scores = compute_org_exposure(roles, rates)
+    return roles, rates
+
+
+@st.cache_data
+def compute_analysis(
+    input_path: str,
+    reference_path: str,
+    weight_theoretical: float = 0.4,
+) -> tuple:  # type: ignore[type-arg]
+    """Compute all analysis data with given weights."""
+    roles, rates = load_raw_data(input_path, reference_path)
+    weight_observed = 1.0 - weight_theoretical
+    scores = compute_org_exposure(roles, rates, weight_theoretical, weight_observed)
     mean_exp = org_mean_exposure(roles, scores)
     dept_exp = exposure_by_department(roles, scores)
     urgency = score_org_urgency(roles, scores, None, rates)
@@ -97,17 +110,41 @@ def main() -> None:
     reference_path = st.sidebar.text_input("Reference rates", value=reference_path)
 
     try:
-        roles, rates, scores, mean_exp, dept_exp, urgency, segments = load_data(
-            input_path, reference_path
-        )
+        roles_initial, _rates_initial = load_raw_data(input_path, reference_path)
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return
 
-    score_map = {s.role_id: s for s in scores}
     # Department filter
-    departments = sorted(set(r.department for r in roles))
+    departments = sorted(set(r.department for r in roles_initial))
     selected_depts = st.sidebar.multiselect("Filter departments", departments, default=departments)
+
+    # Weight tuning
+    with st.sidebar.expander("Advanced: Adjust Weights"):
+        weight_theoretical = st.slider(
+            "Theoretical weight",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.4,
+            step=0.05,
+        )
+        weight_observed = 1.0 - weight_theoretical
+        st.markdown(f"**Observed weight:** {weight_observed:.2f}")
+        st.caption(
+            "Higher observed weight = more grounded in actual AI adoption. "
+            "Higher theoretical weight = more forward-looking."
+        )
+
+    # Compute analysis with current weights
+    try:
+        roles, rates, scores, mean_exp, dept_exp, urgency, segments = compute_analysis(
+            input_path, reference_path, weight_theoretical
+        )
+    except Exception as e:
+        st.error(f"Error computing analysis: {e}")
+        return
+
+    score_map = {s.role_id: s for s in scores}
 
     # About AEDM sidebar section
     st.sidebar.divider()
@@ -196,6 +233,15 @@ def main() -> None:
                 )
         if top_data:
             st.dataframe(pd.DataFrame(top_data), use_container_width=True, hide_index=True)
+
+        # Export
+        export_df = scores_to_dataframe(filtered_roles, filtered_scores)
+        st.download_button(
+            "Download Exposure Scores (CSV)",
+            data=export_df.to_csv(index=False),
+            file_name="exposure_scores.csv",
+            mime="text/csv",
+        )
 
     # Tab: How It Works
     with tab_how:
@@ -411,6 +457,28 @@ def main() -> None:
                 "individual employment outcomes."
             )
 
+        # Export
+        if segments:
+            disparity_df = pd.DataFrame(
+                [
+                    {
+                        "Segment Type": s.segment_type,
+                        "Segment Value": s.segment_value,
+                        "Mean Exposure": s.mean_exposure,
+                        "Disparity Ratio": s.disparity_ratio,
+                        "Headcount": s.headcount,
+                        "Flagged": s.flagged,
+                    }
+                    for s in segments
+                ]
+            )
+            st.download_button(
+                "Download Disparity Analysis (CSV)",
+                data=disparity_df.to_csv(index=False),
+                file_name="disparity_analysis.csv",
+                mime="text/csv",
+            )
+
     # Tab 5: Reskilling Priority
     with tab5:
         st.subheader("Reskilling Urgency Rankings")
@@ -439,6 +507,37 @@ def main() -> None:
         if urg_data:
             st.dataframe(pd.DataFrame(urg_data), use_container_width=True, hide_index=True)
 
+        # Export
+        role_map_urg = {r.role_id: r for r in roles}
+        urgency_df = pd.DataFrame(
+            [
+                {
+                    "Title": role_map_urg[u.role_id].title
+                    if u.role_id in role_map_urg
+                    else "",
+                    "Department": role_map_urg[u.role_id].department
+                    if u.role_id in role_map_urg
+                    else "",
+                    "Urgency Score": u.score,
+                    "Tier": u.tier.value,
+                    "Headcount": role_map_urg[u.role_id].headcount
+                    if u.role_id in role_map_urg
+                    else 0,
+                    "Exposure Component": u.exposure_component,
+                    "Drift Component": u.drift_component,
+                    "Headcount Component": u.headcount_component,
+                    "Difficulty Component": u.difficulty_component,
+                }
+                for u in urgency
+            ]
+        )
+        st.download_button(
+            "Download Urgency Rankings (CSV)",
+            data=urgency_df.to_csv(index=False),
+            file_name="urgency_rankings.csv",
+            mime="text/csv",
+        )
+
     # Tab 6: Scenario Modeling
     with tab6:
         st.subheader("What-If Scenario: Exposure Acceleration")
@@ -466,7 +565,7 @@ def main() -> None:
         for s in scores:
             gap = s.theoretical - s.observed
             new_observed = s.observed + gap * scenario_factor
-            new_blended = 0.4 * s.theoretical + 0.6 * new_observed
+            new_blended = weight_theoretical * s.theoretical + weight_observed * new_observed
             new_tier = ExposureTier.from_score(new_blended)
             scenario_scores.append(
                 {
