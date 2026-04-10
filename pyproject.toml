@@ -39,6 +39,7 @@ dependencies = [
     "matplotlib>=3.7",
     "thefuzz[speedup]>=0.20",
     "streamlit>=1.28",
+    "markdown>=3.4",
 ]
 
 [project.optional-dependencies]
@@ -73,10 +74,7 @@ select = [
     "SIM",  # flake8-simplify
     "ANN",  # flake8-annotations
 ]
-ignore = [
-    "ANN101",  # missing type annotation for self
-    "ANN102",  # missing type annotation for cls
-]
+ignore = []
 
 [tool.ruff.lint.isort]
 known-first-party = ["aedm"]

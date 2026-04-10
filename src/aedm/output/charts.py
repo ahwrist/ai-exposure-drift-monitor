@@ -62,10 +62,7 @@ def exposure_heatmap(
         dept_data[dept].append((role.title, score.blended, role.headcount))
 
     # Sort departments by mean exposure
-    dept_means = {
-        dept: sum(s for _, s, _ in data) / len(data)
-        for dept, data in dept_data.items()
-    }
+    dept_means = {dept: sum(s for _, s, _ in data) / len(data) for dept, data in dept_data.items()}
     sorted_depts = sorted(dept_means, key=lambda d: dept_means[d], reverse=True)
 
     fig = go.Figure()
@@ -73,25 +70,31 @@ def exposure_heatmap(
     for dept in sorted_depts:
         entries = sorted(dept_data[dept], key=lambda x: -x[1])[:10]  # Top 10 per dept
         for role_title, blended, headcount in entries:
-            fig.add_trace(go.Bar(
-                name=dept,
-                x=[blended],
-                y=[f"{dept} | {role_title}"],
-                orientation="h",
-                marker_color=TIER_COLORS.get(
-                    "Critical" if blended >= 0.75 else
-                    "High" if blended >= 0.5 else
-                    "Moderate" if blended >= 0.25 else "Low",
-                    GRAY,
-                ),
-                hovertemplate=(
-                    f"<b>{role_title}</b><br>"
-                    f"Department: {dept}<br>"
-                    f"Exposure: {blended:.2%}<br>"
-                    f"Headcount: {headcount}<extra></extra>"
-                ),
-                showlegend=False,
-            ))
+            fig.add_trace(
+                go.Bar(
+                    name=dept,
+                    x=[blended],
+                    y=[f"{dept} | {role_title}"],
+                    orientation="h",
+                    marker_color=TIER_COLORS.get(
+                        "Critical"
+                        if blended >= 0.75
+                        else "High"
+                        if blended >= 0.5
+                        else "Moderate"
+                        if blended >= 0.25
+                        else "Low",
+                        GRAY,
+                    ),
+                    hovertemplate=(
+                        f"<b>{role_title}</b><br>"
+                        f"Department: {dept}<br>"
+                        f"Exposure: {blended:.2%}<br>"
+                        f"Headcount: {headcount}<extra></extra>"
+                    ),
+                    showlegend=False,
+                )
+            )
 
     fig.update_layout(
         title=title,
@@ -129,26 +132,33 @@ def drift_sparklines(
     directions = [d.direction.value for d in sorted_results]
 
     colors = [
-        RED if d.direction.value == "Accelerating" else
-        TEAL if d.direction.value == "Decelerating" else GRAY
+        RED
+        if d.direction.value == "Accelerating"
+        else TEAL
+        if d.direction.value == "Decelerating"
+        else GRAY
         for d in sorted_results
     ]
 
     fig = go.Figure()
 
-    fig.add_trace(go.Bar(
-        x=slopes,
-        y=entities,
-        orientation="h",
-        marker_color=colors,
-        hovertemplate=[
-            f"<b>{eid}</b><br>"
-            f"Direction: {direction}<br>"
-            f"Slope: {slope:+.4f}/period<br>"
-            f"p-value: {pval:.3f}<extra></extra>"
-            for eid, direction, slope, pval in zip(entities, directions, slopes, p_values)
-        ],
-    ))
+    fig.add_trace(
+        go.Bar(
+            x=slopes,
+            y=entities,
+            orientation="h",
+            marker_color=colors,
+            hovertemplate=[
+                f"<b>{eid}</b><br>"
+                f"Direction: {direction}<br>"
+                f"Slope: {slope:+.4f}/period<br>"
+                f"p-value: {pval:.3f}<extra></extra>"
+                for eid, direction, slope, pval in zip(
+                    entities, directions, slopes, p_values, strict=True
+                )
+            ],
+        )
+    )
 
     fig.update_layout(
         title=title,
@@ -187,20 +197,22 @@ def demographic_disparity_bars(
         ratios = [s.disparity_ratio for s in type_segments]
         colors = [RED if s.flagged else TEAL for s in type_segments]
 
-        fig.add_trace(go.Bar(
-            name=seg_type.replace("_", " ").title(),
-            x=labels,
-            y=ratios,
-            marker_color=colors,
-            hovertemplate=[
-                f"<b>{label}</b> ({seg_type})<br>"
-                f"Disparity Ratio: {ratio:.2f}x<br>"
-                f"Mean Exposure: {seg.mean_exposure:.2%}<br>"
-                f"Headcount: {seg.headcount}<br>"
-                f"{'⚠ FLAGGED' if seg.flagged else 'Within threshold'}<extra></extra>"
-                for label, ratio, seg in zip(labels, ratios, type_segments)
-            ],
-        ))
+        fig.add_trace(
+            go.Bar(
+                name=seg_type.replace("_", " ").title(),
+                x=labels,
+                y=ratios,
+                marker_color=colors,
+                hovertemplate=[
+                    f"<b>{label}</b> ({seg_type})<br>"
+                    f"Disparity Ratio: {ratio:.2f}x<br>"
+                    f"Mean Exposure: {seg.mean_exposure:.2%}<br>"
+                    f"Headcount: {seg.headcount}<br>"
+                    f"{'⚠ FLAGGED' if seg.flagged else 'Within threshold'}<extra></extra>"
+                    for label, ratio, seg in zip(labels, ratios, type_segments, strict=True)
+                ],
+            )
+        )
 
     # Add threshold line
     fig.add_hline(
@@ -270,18 +282,20 @@ def urgency_matrix(
 
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(
-        x=x_vals,
-        y=y_vals,
-        mode="markers",
-        marker=dict(
-            size=sizes,
-            color=colors,
-            opacity=0.7,
-            line=dict(width=1, color=NAVY),
-        ),
-        hovertemplate=[f"{ht}<extra></extra>" for ht in hover_texts],
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=x_vals,
+            y=y_vals,
+            mode="markers",
+            marker=dict(
+                size=sizes,
+                color=colors,
+                opacity=0.7,
+                line=dict(width=1, color=NAVY),
+            ),
+            hovertemplate=[f"{ht}<extra></extra>" for ht in hover_texts],
+        )
+    )
 
     fig.update_layout(
         title=title,
@@ -314,13 +328,15 @@ def exposure_distribution(
 
     fig = go.Figure()
 
-    fig.add_trace(go.Histogram(
-        x=values,
-        nbinsx=20,
-        marker_color=TEAL,
-        marker_line=dict(width=1, color=NAVY),
-        hovertemplate="Exposure: %{x:.2f}<br>Count: %{y}<extra></extra>",
-    ))
+    fig.add_trace(
+        go.Histogram(
+            x=values,
+            nbinsx=20,
+            marker_color=TEAL,
+            marker_line=dict(width=1, color=NAVY),
+            hovertemplate="Exposure: %{x:.2f}<br>Count: %{y}<extra></extra>",
+        )
+    )
 
     fig.update_layout(
         title=title,
@@ -346,7 +362,7 @@ def figure_to_png(fig: go.Figure, width: int = 1200, height: int = 600) -> bytes
         PNG image as bytes.
     """
     try:
-        return fig.to_image(format="png", width=width, height=height)  # type: ignore[return-value]
+        return bytes(fig.to_image(format="png", width=width, height=height))
     except (ValueError, ImportError):
         # Fallback: save as HTML string indicator
         logger.warning("png_export_fallback", reason="kaleido not installed")

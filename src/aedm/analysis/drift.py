@@ -112,7 +112,9 @@ def detect_drift_cusum(
     _threshold = threshold if threshold is not None else settings.cusum_threshold
     _min = min_periods if min_periods is not None else settings.drift_min_periods
     _n_perm = n_permutations if n_permutations is not None else settings.drift_permutations
-    _sig = significance_level if significance_level is not None else settings.drift_significance_level
+    _sig = (
+        significance_level if significance_level is not None else settings.drift_significance_level
+    )
 
     n = len(exposure_series)
     if n < _min:
@@ -174,7 +176,8 @@ def detect_org_drift(
         List of DriftResult objects.
     """
     results: list[DriftResult] = []
-    min_periods = int(kwargs.get("min_periods", settings.drift_min_periods) or settings.drift_min_periods)
+    _raw_min = kwargs.get("min_periods")
+    min_periods = int(str(_raw_min)) if _raw_min is not None else settings.drift_min_periods
 
     for entity_id, series in snapshots_by_entity.items():
         if len(series) < min_periods:

@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING, Annotated
 
 import typer
 from rich.console import Console
 from rich.table import Table
 
 from aedm import __version__
+
+if TYPE_CHECKING:
+    from aedm.models.schemas import ExposureScore, Role
 
 app = typer.Typer(
     name="aedm",
@@ -26,29 +30,38 @@ def _version_callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: bool = typer.Option(
-        False, "--version", "-v", callback=_version_callback, is_eager=True,
-        help="Show version and exit.",
-    ),
+    version: Annotated[
+        bool,
+        typer.Option(
+            "--version",
+            "-v",
+            callback=_version_callback,
+            is_eager=True,
+            help="Show version and exit.",
+        ),
+    ] = False,
 ) -> None:
     """AI Exposure Drift Monitor."""
 
 
 @app.command()
 def analyze(
-    input: Path = typer.Option(..., "--input", "-i", help="Path to roles CSV file."),
-    output: Path = typer.Option(
-        Path("report"), "--output", "-o", help="Output directory for reports."
-    ),
-    reference: Path = typer.Option(
-        Path("data/reference/anthropic_exposure_rates.json"),
-        "--reference", "-r",
-        help="Path to reference exposure rates JSON.",
-    ),
-    format: str = typer.Option(
-        "all", "--format", "-f",
-        help="Output format: markdown, html, csv, json, or all.",
-    ),
+    input: Annotated[Path, typer.Option("--input", "-i", help="Path to roles CSV file.")],
+    output: Annotated[
+        Path, typer.Option("--output", "-o", help="Output directory for reports.")
+    ] = Path("report"),
+    reference: Annotated[
+        Path,
+        typer.Option("--reference", "-r", help="Path to reference exposure rates JSON."),
+    ] = Path("data/reference/anthropic_exposure_rates.json"),
+    format: Annotated[
+        str,
+        typer.Option(
+            "--format",
+            "-f",
+            help="Output format: markdown, html, csv, json, or all.",
+        ),
+    ] = "all",
 ) -> None:
     """Analyze AI exposure for an organization's roles."""
     try:
@@ -97,15 +110,11 @@ def analyze(
         output.mkdir(parents=True, exist_ok=True)
 
         if format in ("markdown", "all"):
-            md = generate_markdown_report(
-                roles, scores, mean_exp, dept_exp, urgency, segments
-            )
+            md = generate_markdown_report(roles, scores, mean_exp, dept_exp, urgency, segments)
             save_report(md, output / "exposure_report.md")
 
         if format in ("html", "all"):
-            md = generate_markdown_report(
-                roles, scores, mean_exp, dept_exp, urgency, segments
-            )
+            md = generate_markdown_report(roles, scores, mean_exp, dept_exp, urgency, segments)
             html = generate_html_report(md)
             save_report(html, output / "exposure_report.html")
 
@@ -114,8 +123,13 @@ def analyze(
 
         if format in ("json", "all"):
             export_json(
-                roles, scores, output / "exposure_scores.json",
-                urgency, segments, org_mean=mean_exp, dept_means=dept_exp,
+                roles,
+                scores,
+                output / "exposure_scores.json",
+                urgency,
+                segments,
+                org_mean=mean_exp,
+                dept_means=dept_exp,
             )
 
         console.print(f"\n  Reports saved to [green]{output}/[/green]")
@@ -128,17 +142,21 @@ def analyze(
 
 @app.command()
 def drift(
-    input_dir: Path = typer.Option(
-        ..., "--input-dir", "-d", help="Directory containing quarterly CSV snapshots."
+    input_dir: Annotated[
+        Path,
+        typer.Option(
+            "--input-dir",
+            "-d",
+            help="Directory containing quarterly CSV snapshots.",
+        ),
+    ],
+    output: Annotated[Path, typer.Option("--output", "-o", help="Output directory.")] = Path(
+        "report"
     ),
-    output: Path = typer.Option(
-        Path("report"), "--output", "-o", help="Output directory."
-    ),
-    reference: Path = typer.Option(
-        Path("data/reference/anthropic_exposure_rates.json"),
-        "--reference", "-r",
-        help="Path to reference exposure rates JSON.",
-    ),
+    reference: Annotated[
+        Path,
+        typer.Option("--reference", "-r", help="Path to reference exposure rates JSON."),
+    ] = Path("data/reference/anthropic_exposure_rates.json"),
 ) -> None:
     """Detect exposure drift across multiple time periods."""
     try:
@@ -200,16 +218,15 @@ def drift(
 
 @app.command()
 def report(
-    input: Path = typer.Option(..., "--input", "-i", help="Path to roles CSV file."),
-    output: Path = typer.Option(
-        Path("report"), "--output", "-o", help="Output directory."
+    input: Annotated[Path, typer.Option("--input", "-i", help="Path to roles CSV file.")],
+    output: Annotated[Path, typer.Option("--output", "-o", help="Output directory.")] = Path(
+        "report"
     ),
-    format: str = typer.Option("all", "--format", "-f", help="Output format."),
-    reference: Path = typer.Option(
-        Path("data/reference/anthropic_exposure_rates.json"),
-        "--reference", "-r",
-        help="Path to reference exposure rates JSON.",
-    ),
+    format: Annotated[str, typer.Option("--format", "-f", help="Output format.")] = "all",
+    reference: Annotated[
+        Path,
+        typer.Option("--reference", "-r", help="Path to reference exposure rates JSON."),
+    ] = Path("data/reference/anthropic_exposure_rates.json"),
 ) -> None:
     """Generate exposure analysis reports."""
     # Delegate to analyze with report focus
@@ -218,17 +235,15 @@ def report(
 
 @app.command()
 def dashboard(
-    input: Path = typer.Option(
-        Path("data/sample/acme_corp_roles.csv"),
-        "--input", "-i",
-        help="Path to roles CSV file.",
-    ),
-    reference: Path = typer.Option(
-        Path("data/reference/anthropic_exposure_rates.json"),
-        "--reference", "-r",
-        help="Path to reference exposure rates JSON.",
-    ),
-    port: int = typer.Option(8501, "--port", "-p", help="Dashboard port."),
+    input: Annotated[
+        Path,
+        typer.Option("--input", "-i", help="Path to roles CSV file."),
+    ] = Path("data/sample/acme_corp_roles.csv"),
+    reference: Annotated[
+        Path,
+        typer.Option("--reference", "-r", help="Path to reference exposure rates JSON."),
+    ] = Path("data/reference/anthropic_exposure_rates.json"),
+    port: Annotated[int, typer.Option("--port", "-p", help="Dashboard port.")] = 8501,
 ) -> None:
     """Launch the interactive Streamlit dashboard."""
     import subprocess
@@ -243,19 +258,24 @@ def dashboard(
 
     subprocess.run(
         [
-            sys.executable, "-m", "streamlit", "run",
+            sys.executable,
+            "-m",
+            "streamlit",
+            "run",
             str(dashboard_path),
-            "--server.port", str(port),
+            "--server.port",
+            str(port),
             "--",
-            str(input), str(reference),
+            str(input),
+            str(reference),
         ],
         check=False,
     )
 
 
 def _print_summary(
-    roles: list["Role"],  # noqa: F821
-    scores: list["ExposureScore"],  # noqa: F821
+    roles: list[Role],
+    scores: list[ExposureScore],
     mean_exp: float,
     dept_exp: dict[str, float],
 ) -> None:

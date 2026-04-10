@@ -116,4 +116,53 @@
 
 **Known Issues:**
 - Coverage below 80% target due to untested CLI, dashboard, and output rendering code. Core analysis logic exceeds 80%.
-- `markdown` package not installed — HTML report falls back to `<pre>` wrapped markdown
+
+## Phase 7: Quality Pass [Agent: quality]
+
+**Status:** Complete
+**Files modified:**
+- `pyproject.toml` — Added `markdown>=3.4` to dependencies; removed obsolete `ANN101`/`ANN102` ignores from ruff config
+- `Makefile` — Added `--ignore-missing-imports` to mypy target (per CLAUDE.md convention)
+- `src/aedm/py.typed` — Added PEP 561 marker file
+- `src/aedm/models/enums.py` — Migrated `ExposureTier`, `RiskLevel`, `DriftDirection` from `str, Enum` to `StrEnum` (UP042)
+- `src/aedm/cli.py` — Converted all `typer.Option()` defaults to `Annotated[]` syntax (B008); added `TYPE_CHECKING` import for type hints
+- `src/aedm/analysis/drift.py` — Fixed E501 line length; fixed mypy `int(object)` overload error in `detect_org_drift`
+- `src/aedm/analysis/reskill.py` — Removed unused `numpy` import (F401); refactored long ternary expressions for urgency components (E501)
+- `src/aedm/ingest/onet_mapper.py` — Removed quoted type annotations (UP037); added `TYPE_CHECKING` import; fixed E501
+- `src/aedm/output/charts.py` — Added `strict=True` to `zip()` calls (B905); fixed `figure_to_png` return type for mypy
+- `src/aedm/output/report.py` — Removed unused `score_map` variable (F841); fixed E501 line lengths
+- `src/aedm/dashboard/app.py` — Removed `sys.path` hack (package is installed); removed unused variables `urgency_map` and `exposure_view` (F841); fixed `SIM910`; fixed E501 lines
+- `src/aedm/ingest/parser.py` — Removed stale `type: ignore` comment
+- `tests/conftest.py` — Removed unused `UrgencyWeights` import; fixed E501 path construction
+- `tests/test_exposure.py` — Removed unused `Path`, `pytest`, `ExposureScore` imports; added fixture type annotations
+- `tests/test_demographics.py` — Fixed import ordering (I001); added fixture type annotations
+- `tests/test_reskill.py` — Fixed import ordering (I001); added fixture type annotations
+- `tests/test_ingest.py` — Removed unused `ValidationError` import
+
+**Lint fixes by rule:**
+- ANN001 (43): Added type annotations to all pytest fixture parameters in test files
+- E501 (14): Broke long lines across all modules
+- F401 (12): Removed unused imports
+- B008 (11): Converted CLI to `Annotated[]` pattern
+- E402 (7): Removed `sys.path` hack in dashboard (installed package doesn't need it)
+- F841 (3): Removed unused variable assignments
+- UP042 (3): Migrated enums to `StrEnum`
+- B905 (2): Added `strict=True` to `zip()` calls
+- SIM910 (1): Replaced `.get(x, None)` with `.get(x)`
+- UP037 (2): Removed quoted annotations where `from __future__ import annotations` suffices
+- I001 (1): Fixed import sorting
+
+**mypy fixes:**
+- `int(object)` overload error in drift.py
+- Removed stale `type: ignore` comments (parser.py, charts.py)
+- Added `type: ignore[import-untyped]` for `markdown` package
+- Added `type: ignore[type-arg]` for Streamlit cached bare `tuple` return
+- Fixed `figure_to_png` to return `bytes()` instead of `Any`
+
+**Quality gate results:** `make check` passes — ruff (0 errors), mypy (0 errors), pytest (62/62 passed)
+
+**Decisions:**
+- Removed `sys.path` manipulation from dashboard — unnecessary with editable install
+- Used `Annotated[]` syntax for all CLI options (modern Typer pattern, avoids B008)
+- Added `TYPE_CHECKING` guards to avoid circular imports in `cli.py` and `onet_mapper.py`
+- All formatting applied via `ruff format` (18 files reformatted)

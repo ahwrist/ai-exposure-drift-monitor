@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import structlog
 from thefuzz import fuzz, process
 
 from aedm.config import settings
+
+if TYPE_CHECKING:
+    from aedm.models.schemas import Role
 
 logger = structlog.get_logger()
 
@@ -226,11 +231,16 @@ def map_title_to_soc(title: str, threshold: int | None = None) -> tuple[str, int
         logger.debug("fuzzy_soc_match", title=title_clean, matched=matched_title, score=score)
         return soc, score
 
-    logger.warning("low_confidence_soc_match", title=title_clean, best_match=matched_title, score=score)
+    logger.warning(
+        "low_confidence_soc_match",
+        title=title_clean,
+        best_match=matched_title,
+        score=score,
+    )
     return "", score
 
 
-def map_roles(roles: list["Role"]) -> list["Role"]:  # noqa: F821
+def map_roles(roles: list[Role]) -> list[Role]:
     """Map SOC codes for all roles that don't already have one.
 
     Args:
@@ -239,8 +249,6 @@ def map_roles(roles: list["Role"]) -> list["Role"]:  # noqa: F821
     Returns:
         List of Role objects with soc_code populated where possible.
     """
-    from aedm.models.schemas import Role
-
     mapped: list[Role] = []
     unmapped_count = 0
 

@@ -26,9 +26,7 @@ class AEDMSettings(BaseSettings):
 
     # Demographics
     disparity_flag_threshold: float = Field(default=1.2, gt=1.0)
-    pay_band_boundaries: list[int] = Field(
-        default=[50000, 80000, 120000, 160000, 200000]
-    )
+    pay_band_boundaries: list[int] = Field(default=[50000, 80000, 120000, 160000, 200000])
 
     # Urgency scoring
     urgency_weights_exposure: float = 0.30

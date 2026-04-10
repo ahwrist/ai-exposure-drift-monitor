@@ -46,7 +46,7 @@ def _df_to_roles(df: pd.DataFrame) -> list[Role]:
         if "remote_pct" in row and pd.notna(row["remote_pct"]):
             role_data["remote_pct"] = float(row["remote_pct"])
 
-        roles.append(Role(**role_data))  # type: ignore[arg-type]
+        roles.append(Role(**role_data))
     return roles
 
 
@@ -101,7 +101,7 @@ def parse_json_roles(path: Path) -> list[Role]:
     elif isinstance(data, dict) and "roles" in data:
         df = pd.DataFrame(data["roles"])
     else:
-        raise ValidationError(["JSON must be a list of role objects or {\"roles\": [...]}"])
+        raise ValidationError(['JSON must be a list of role objects or {"roles": [...]}'])
 
     df = _assign_role_ids(df)
     validate_or_raise(df)

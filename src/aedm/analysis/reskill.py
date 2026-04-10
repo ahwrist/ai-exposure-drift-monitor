@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import math
 
-import numpy as np
 import structlog
 
 from aedm.config import settings
@@ -50,9 +49,7 @@ def estimate_reskill_difficulty(
 
     # Find exposure rates of all other groups
     other_rates = [
-        rate.observed_exposure
-        for code, rate in reference_rates.items()
-        if code != soc_major_group
+        rate.observed_exposure for code, rate in reference_rates.items() if code != soc_major_group
     ]
 
     if not other_rates:
@@ -128,10 +125,11 @@ def score_reskill_urgency(
     difficulty_component = max(0.0, min(1.0, reskill_difficulty))
 
     # If no drift data, redistribute drift weight proportionally
+    total_non_drift = w.exposure + w.headcount + w.difficulty
+    scale = 1.0 / total_non_drift if total_non_drift > 0 else 0.0
+
     if drift is None:
-        total_non_drift = w.exposure + w.headcount + w.difficulty
         if total_non_drift > 0:
-            scale = 1.0 / total_non_drift
             score = (
                 w.exposure * scale * exposure_component
                 + w.headcount * scale * headcount_component
@@ -150,14 +148,23 @@ def score_reskill_urgency(
     score = max(0.0, min(1.0, score))
     tier = ExposureTier.from_score(score)
 
+    hc_comp = (
+        w.headcount * headcount_component if drift else (w.headcount * scale * headcount_component)
+    )
+    diff_comp = (
+        w.difficulty * difficulty_component
+        if drift
+        else (w.difficulty * scale * difficulty_component)
+    )
+
     return UrgencyScore(
         role_id=exposure.role_id,
         score=round(score, 4),
         tier=tier,
         exposure_component=round(w.exposure * exposure_component, 4),
-        drift_component=round((w.drift * drift_component) if drift else 0.0, 4),
-        headcount_component=round(w.headcount * headcount_component if drift else (w.headcount * (1.0 / (w.exposure + w.headcount + w.difficulty)) * headcount_component if (w.exposure + w.headcount + w.difficulty) > 0 else 0.0), 4),
-        difficulty_component=round(w.difficulty * difficulty_component if drift else (w.difficulty * (1.0 / (w.exposure + w.headcount + w.difficulty)) * difficulty_component if (w.exposure + w.headcount + w.difficulty) > 0 else 0.0), 4),
+        drift_component=round(w.drift * drift_component if drift else 0.0, 4),
+        headcount_component=round(hc_comp, 4),
+        difficulty_component=round(diff_comp, 4),
     )
 
 

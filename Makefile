@@ -13,7 +13,7 @@ lint:
 	ruff check src/ tests/
 
 typecheck:
-	mypy src/aedm/
+	mypy src/aedm/ --ignore-missing-imports
 
 format:
 	ruff format src/ tests/

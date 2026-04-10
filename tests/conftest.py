@@ -7,12 +7,12 @@ from pathlib import Path
 import pytest
 
 from aedm.models.enums import ExposureTier
-from aedm.models.schemas import ExposureRate, ExposureScore, Role, UrgencyWeights
+from aedm.models.schemas import ExposureRate, ExposureScore, Role
 
-
-SAMPLE_CSV_PATH = Path(__file__).parent.parent / "data" / "sample" / "acme_corp_roles.csv"
-QUARTERLY_DIR = Path(__file__).parent.parent / "data" / "sample" / "acme_corp_quarterly"
-REFERENCE_PATH = Path(__file__).parent.parent / "data" / "reference" / "anthropic_exposure_rates.json"
+DATA_ROOT = Path(__file__).parent.parent / "data"
+SAMPLE_CSV_PATH = DATA_ROOT / "sample" / "acme_corp_roles.csv"
+QUARTERLY_DIR = DATA_ROOT / "sample" / "acme_corp_quarterly"
+REFERENCE_PATH = DATA_ROOT / "reference" / "anthropic_exposure_rates.json"
 
 
 @pytest.fixture
@@ -125,24 +125,44 @@ def sample_scores() -> list[ExposureScore]:
     """Pre-computed exposure scores matching sample_roles fixture."""
     return [
         ExposureScore(
-            role_id="T001", theoretical=0.94, observed=0.33,
-            blended=0.574, tier=ExposureTier.HIGH, soc_major_group="15-0000",
+            role_id="T001",
+            theoretical=0.94,
+            observed=0.33,
+            blended=0.574,
+            tier=ExposureTier.HIGH,
+            soc_major_group="15-0000",
         ),
         ExposureScore(
-            role_id="T002", theoretical=0.943, observed=0.20,
-            blended=0.4972, tier=ExposureTier.MODERATE, soc_major_group="13-0000",
+            role_id="T002",
+            theoretical=0.943,
+            observed=0.20,
+            blended=0.4972,
+            tier=ExposureTier.MODERATE,
+            soc_major_group="13-0000",
         ),
         ExposureScore(
-            role_id="T003", theoretical=0.38, observed=0.03,
-            blended=0.17, tier=ExposureTier.LOW, soc_major_group="53-0000",
+            role_id="T003",
+            theoretical=0.38,
+            observed=0.03,
+            blended=0.17,
+            tier=ExposureTier.LOW,
+            soc_major_group="53-0000",
         ),
         ExposureScore(
-            role_id="T004", theoretical=0.943, observed=0.20,
-            blended=0.4972, tier=ExposureTier.MODERATE, soc_major_group="13-0000",
+            role_id="T004",
+            theoretical=0.943,
+            observed=0.20,
+            blended=0.4972,
+            tier=ExposureTier.MODERATE,
+            soc_major_group="13-0000",
         ),
         ExposureScore(
-            role_id="T005", theoretical=0.52, observed=0.05,
-            blended=0.238, tier=ExposureTier.LOW, soc_major_group="33-0000",
+            role_id="T005",
+            theoretical=0.52,
+            observed=0.05,
+            blended=0.238,
+            tier=ExposureTier.LOW,
+            soc_major_group="33-0000",
         ),
     ]
 

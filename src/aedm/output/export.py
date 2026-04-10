@@ -116,9 +116,7 @@ def export_json(
             "total_roles": len(roles),
             "total_headcount": total_headcount,
             "org_mean_exposure": round(org_mean, 4),
-            "department_means": {
-                dept: round(mean, 4) for dept, mean in (dept_means or {}).items()
-            },
+            "department_means": {dept: round(mean, 4) for dept, mean in (dept_means or {}).items()},
         },
         "scores": [
             {

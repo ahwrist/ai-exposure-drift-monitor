@@ -83,15 +83,17 @@ def analyze_gender_disparity(
         if hc > 0:
             mean_exp = data["weighted_exposure"] / hc
             ratio = mean_exp / org_mean if org_mean > 0 else 0.0
-            results.append(DemographicSegment(
-                segment_type="gender",
-                segment_value=label,
-                mean_exposure=round(mean_exp, 4),
-                disparity_ratio=round(ratio, 4),
-                headcount=int(round(hc)),
-                exposure_weighted_headcount=round(data["weighted_exposure"], 2),
-                flagged=ratio > threshold,
-            ))
+            results.append(
+                DemographicSegment(
+                    segment_type="gender",
+                    segment_value=label,
+                    mean_exposure=round(mean_exp, 4),
+                    disparity_ratio=round(ratio, 4),
+                    headcount=int(round(hc)),
+                    exposure_weighted_headcount=round(data["weighted_exposure"], 2),
+                    flagged=ratio > threshold,
+                )
+            )
 
     return results
 
@@ -140,15 +142,17 @@ def analyze_education_disparity(
         if hc > 0:
             mean_exp = data["weighted_exposure"] / hc
             ratio = mean_exp / org_mean if org_mean > 0 else 0.0
-            results.append(DemographicSegment(
-                segment_type="education",
-                segment_value=edu_level,
-                mean_exposure=round(mean_exp, 4),
-                disparity_ratio=round(ratio, 4),
-                headcount=int(round(hc)),
-                exposure_weighted_headcount=round(data["weighted_exposure"], 2),
-                flagged=ratio > threshold,
-            ))
+            results.append(
+                DemographicSegment(
+                    segment_type="education",
+                    segment_value=edu_level,
+                    mean_exposure=round(mean_exp, 4),
+                    disparity_ratio=round(ratio, 4),
+                    headcount=int(round(hc)),
+                    exposure_weighted_headcount=round(data["weighted_exposure"], 2),
+                    flagged=ratio > threshold,
+                )
+            )
 
     return results
 
@@ -197,15 +201,17 @@ def analyze_pay_band_disparity(
         if hc > 0:
             mean_exp = data["weighted_exposure"] / hc
             ratio = mean_exp / org_mean if org_mean > 0 else 0.0
-            results.append(DemographicSegment(
-                segment_type="pay_band",
-                segment_value=band,
-                mean_exposure=round(mean_exp, 4),
-                disparity_ratio=round(ratio, 4),
-                headcount=int(round(hc)),
-                exposure_weighted_headcount=round(data["weighted_exposure"], 2),
-                flagged=ratio > threshold,
-            ))
+            results.append(
+                DemographicSegment(
+                    segment_type="pay_band",
+                    segment_value=band,
+                    mean_exposure=round(mean_exp, 4),
+                    disparity_ratio=round(ratio, 4),
+                    headcount=int(round(hc)),
+                    exposure_weighted_headcount=round(data["weighted_exposure"], 2),
+                    flagged=ratio > threshold,
+                )
+            )
 
     return results
 

@@ -8,11 +8,6 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-# Ensure src is on path when running standalone
-_src = Path(__file__).resolve().parent.parent.parent
-if str(_src) not in sys.path:
-    sys.path.insert(0, str(_src))
-
 from aedm.analysis.demographics import analyze_all_disparities
 from aedm.analysis.exposure import (
     compute_org_exposure,
@@ -40,8 +35,9 @@ st.set_page_config(
 
 @st.cache_data
 def load_data(
-    input_path: str, reference_path: str,
-) -> tuple:
+    input_path: str,
+    reference_path: str,
+) -> tuple:  # type: ignore[type-arg]
     """Load and compute all analysis data."""
     roles = parse_csv(Path(input_path))
     rates = load_reference_rates(Path(reference_path))
@@ -80,32 +76,34 @@ def main() -> None:
         return
 
     score_map = {s.role_id: s for s in scores}
-    urgency_map = {u.role_id: u for u in urgency}
-
     # Department filter
     departments = sorted(set(r.department for r in roles))
-    selected_depts = st.sidebar.multiselect(
-        "Filter departments", departments, default=departments
-    )
+    selected_depts = st.sidebar.multiselect("Filter departments", departments, default=departments)
 
     filtered_roles = [r for r in roles if r.department in selected_depts]
-    filtered_scores = [s for s in scores if any(
-        r.role_id == s.role_id for r in filtered_roles
-    )]
+    filtered_scores = [s for s in scores if any(r.role_id == s.role_id for r in filtered_roles)]
 
     # Tabs
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "Org Overview", "Exposure Heatmap", "Drift Analysis",
-        "Demographics", "Reskilling Priority", "Scenario"
-    ])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+        [
+            "Org Overview",
+            "Exposure Heatmap",
+            "Drift Analysis",
+            "Demographics",
+            "Reskilling Priority",
+            "Scenario",
+        ]
+    )
 
     # Tab 1: Org Overview
     with tab1:
         total_hc = sum(r.headcount for r in filtered_roles)
-        filtered_mean = (
-            sum(score_map[r.role_id].blended * r.headcount for r in filtered_roles if r.role_id in score_map)
-            / total_hc if total_hc > 0 else 0
+        weighted_sum = sum(
+            score_map[r.role_id].blended * r.headcount
+            for r in filtered_roles
+            if r.role_id in score_map
         )
+        filtered_mean = weighted_sum / total_hc if total_hc > 0 else 0
 
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Total Roles", len(filtered_roles))
@@ -131,20 +129,22 @@ def main() -> None:
         for s in top_roles:
             r = role_map.get(s.role_id)
             if r:
-                top_data.append({
-                    "Title": r.title,
-                    "Department": r.department,
-                    "Exposure": f"{s.blended:.1%}",
-                    "Tier": s.tier.value,
-                    "Headcount": r.headcount,
-                })
+                top_data.append(
+                    {
+                        "Title": r.title,
+                        "Department": r.department,
+                        "Exposure": f"{s.blended:.1%}",
+                        "Tier": s.tier.value,
+                        "Headcount": r.headcount,
+                    }
+                )
         if top_data:
             st.dataframe(pd.DataFrame(top_data), use_container_width=True, hide_index=True)
 
     # Tab 2: Exposure Heatmap
     with tab2:
         st.subheader("Department × Role Exposure")
-        exposure_view = st.radio(
+        st.radio(
             "Exposure metric",
             ["Blended", "Theoretical", "Observed"],
             horizontal=True,
@@ -177,17 +177,19 @@ def main() -> None:
             fig = demographic_disparity_bars(segments)
             st.plotly_chart(fig, use_container_width=True)
 
-            seg_df = pd.DataFrame([
-                {
-                    "Type": s.segment_type.replace("_", " ").title(),
-                    "Segment": s.segment_value,
-                    "Mean Exposure": f"{s.mean_exposure:.1%}",
-                    "Disparity Ratio": f"{s.disparity_ratio:.2f}x",
-                    "Headcount": s.headcount,
-                    "Flagged": "⚠️" if s.flagged else "",
-                }
-                for s in segments
-            ])
+            seg_df = pd.DataFrame(
+                [
+                    {
+                        "Type": s.segment_type.replace("_", " ").title(),
+                        "Segment": s.segment_value,
+                        "Mean Exposure": f"{s.mean_exposure:.1%}",
+                        "Disparity Ratio": f"{s.disparity_ratio:.2f}x",
+                        "Headcount": s.headcount,
+                        "Flagged": "⚠️" if s.flagged else "",
+                    }
+                    for s in segments
+                ]
+            )
             st.dataframe(seg_df, use_container_width=True, hide_index=True)
 
     # Tab 5: Reskilling Priority
@@ -201,13 +203,15 @@ def main() -> None:
         for u in urgency[:30]:
             r = {r_.role_id: r_ for r_ in roles}.get(u.role_id)
             if r and r.department in selected_depts:
-                urg_data.append({
-                    "Title": r.title,
-                    "Department": r.department,
-                    "Urgency Score": f"{u.score:.1%}",
-                    "Tier": u.tier.value,
-                    "Headcount": r.headcount,
-                })
+                urg_data.append(
+                    {
+                        "Title": r.title,
+                        "Department": r.department,
+                        "Urgency Score": f"{u.score:.1%}",
+                        "Tier": u.tier.value,
+                        "Headcount": r.headcount,
+                    }
+                )
         if urg_data:
             st.dataframe(pd.DataFrame(urg_data), use_container_width=True, hide_index=True)
 
@@ -236,14 +240,16 @@ def main() -> None:
             new_observed = s.observed + gap * scenario_factor
             new_blended = 0.4 * s.theoretical + 0.6 * new_observed
             new_tier = ExposureTier.from_score(new_blended)
-            scenario_scores.append({
-                "role_id": s.role_id,
-                "current_blended": s.blended,
-                "scenario_blended": new_blended,
-                "change": new_blended - s.blended,
-                "current_tier": s.tier.value,
-                "scenario_tier": new_tier.value,
-            })
+            scenario_scores.append(
+                {
+                    "role_id": s.role_id,
+                    "current_blended": s.blended,
+                    "scenario_blended": new_blended,
+                    "change": new_blended - s.blended,
+                    "current_tier": s.tier.value,
+                    "scenario_tier": new_tier.value,
+                }
+            )
 
         scenario_df = pd.DataFrame(scenario_scores)
         role_lookup = {r.role_id: r for r in roles}
@@ -254,19 +260,22 @@ def main() -> None:
 
         col1, col2, col3 = st.columns(3)
         col1.metric("Current Mean Exposure", f"{current_mean:.1%}")
-        col2.metric("Scenario Mean Exposure", f"{scenario_mean:.1%}", f"+{scenario_mean - current_mean:.1%}")
+        delta = scenario_mean - current_mean
+        col2.metric("Scenario Mean Exposure", f"{scenario_mean:.1%}", f"+{delta:.1%}")
 
         current_critical = (scenario_df["current_tier"] == "Critical").sum()
         scenario_critical = (scenario_df["scenario_tier"] == "Critical").sum()
-        col3.metric("Critical-Tier Roles", scenario_critical, f"+{scenario_critical - current_critical}")
+        crit_delta = scenario_critical - current_critical
+        col3.metric("Critical-Tier Roles", scenario_critical, f"+{crit_delta}")
 
         # Show biggest movers
-        scenario_df["title"] = scenario_df["role_id"].map(lambda x: role_lookup.get(x, None))
+        scenario_df["title"] = scenario_df["role_id"].map(lambda x: role_lookup.get(x))
         scenario_df["title"] = scenario_df["title"].apply(lambda r: r.title if r else "")
         scenario_df = scenario_df.sort_values("change", ascending=False)
 
         st.subheader("Biggest Impact Roles")
-        display_df = scenario_df.head(15)[["title", "current_blended", "scenario_blended", "change", "scenario_tier"]]
+        cols = ["title", "current_blended", "scenario_blended", "change", "scenario_tier"]
+        display_df = scenario_df.head(15)[cols]
         display_df.columns = ["Title", "Current", "Scenario", "Change", "New Tier"]
         display_df["Current"] = display_df["Current"].apply(lambda x: f"{x:.1%}")
         display_df["Scenario"] = display_df["Scenario"].apply(lambda x: f"{x:.1%}")

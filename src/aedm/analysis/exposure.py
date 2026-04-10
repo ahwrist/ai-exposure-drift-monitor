@@ -151,8 +151,4 @@ def exposure_by_department(
         dept_hc[dept] = dept_hc.get(dept, 0) + role.headcount
         dept_weighted[dept] = dept_weighted.get(dept, 0.0) + score.blended * role.headcount
 
-    return {
-        dept: dept_weighted[dept] / dept_hc[dept]
-        for dept in dept_hc
-        if dept_hc[dept] > 0
-    }
+    return {dept: dept_weighted[dept] / dept_hc[dept] for dept in dept_hc if dept_hc[dept] > 0}

@@ -27,7 +27,8 @@ class TestDetectDriftCusum:
         # Strong upward trend
         series = [0.1, 0.2, 0.4, 0.6, 0.8, 0.9]
         result = detect_drift_cusum(
-            series, entity_id="test",
+            series,
+            entity_id="test",
             n_permutations=2000,
             rng=rng,
         )
@@ -40,7 +41,8 @@ class TestDetectDriftCusum:
         # Flat then jump
         series = [0.3, 0.3, 0.3, 0.3, 0.7, 0.7, 0.7, 0.7]
         result = detect_drift_cusum(
-            series, entity_id="test",
+            series,
+            entity_id="test",
             n_permutations=2000,
             threshold=0.5,
             rng=rng,
@@ -59,8 +61,10 @@ class TestDetectDriftCusum:
         """Exactly min_periods should work."""
         rng = np.random.default_rng(42)
         result = detect_drift_cusum(
-            [0.3, 0.4, 0.5], entity_id="test",
-            min_periods=3, rng=rng,
+            [0.3, 0.4, 0.5],
+            entity_id="test",
+            min_periods=3,
+            rng=rng,
         )
         assert result.n_periods == 3
 
@@ -74,7 +78,9 @@ class TestDetectDriftCusum:
         """CI lower should be <= slope <= CI upper."""
         rng = np.random.default_rng(42)
         result = detect_drift_cusum(
-            [0.1, 0.2, 0.3, 0.4, 0.5], entity_id="test", rng=rng,
+            [0.1, 0.2, 0.3, 0.4, 0.5],
+            entity_id="test",
+            rng=rng,
         )
         assert result.trend_ci_lower <= result.trend_slope <= result.trend_ci_upper
 

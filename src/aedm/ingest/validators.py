@@ -64,8 +64,7 @@ def validate_dataframe(df: pd.DataFrame) -> list[str]:
         if bad_soc.any():
             bad_values = filled[bad_soc].head(3).tolist()
             errors.append(
-                f"{int(bad_soc.sum())} invalid SOC code(s) "
-                f"(expected format XX-XXXX): {bad_values}"
+                f"{int(bad_soc.sum())} invalid SOC code(s) (expected format XX-XXXX): {bad_values}"
             )
 
     # Validate headcount if present
@@ -81,9 +80,7 @@ def validate_dataframe(df: pd.DataFrame) -> list[str]:
             vals = pd.to_numeric(df[pct_col], errors="coerce")
             out_of_range = vals.notna() & ((vals < 0) | (vals > 1))
             if out_of_range.any():
-                errors.append(
-                    f"{int(out_of_range.sum())} row(s) have {pct_col} outside [0, 1]."
-                )
+                errors.append(f"{int(out_of_range.sum())} row(s) have {pct_col} outside [0, 1].")
 
     # Validate education levels if present
     if "education_mode" in df.columns:

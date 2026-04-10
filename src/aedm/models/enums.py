@@ -1,9 +1,9 @@
 """Enumerations for exposure tiers, risk levels, and drift directions."""
 
-from enum import Enum
+from enum import StrEnum
 
 
-class ExposureTier(str, Enum):
+class ExposureTier(StrEnum):
     """Exposure tier based on blended exposure score."""
 
     CRITICAL = "Critical"
@@ -23,7 +23,7 @@ class ExposureTier(str, Enum):
         return cls.LOW
 
 
-class RiskLevel(str, Enum):
+class RiskLevel(StrEnum):
     """Risk level for reskilling urgency."""
 
     CRITICAL = "Critical"
@@ -32,7 +32,7 @@ class RiskLevel(str, Enum):
     LOW = "Low"
 
 
-class DriftDirection(str, Enum):
+class DriftDirection(StrEnum):
     """Direction of exposure drift over time."""
 
     ACCELERATING = "Accelerating"

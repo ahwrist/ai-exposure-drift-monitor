@@ -7,7 +7,6 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from aedm.exceptions import ValidationError
 from aedm.ingest.onet_mapper import map_roles, map_title_to_soc
 from aedm.ingest.parser import load_reference_rates, parse_csv
 from aedm.ingest.validators import validate_dataframe
@@ -17,10 +16,12 @@ class TestValidation:
     """Tests for input data validation."""
 
     def test_valid_dataframe_passes(self) -> None:
-        df = pd.DataFrame({
-            "title": ["Software Engineer", "Data Analyst"],
-            "headcount": [10, 5],
-        })
+        df = pd.DataFrame(
+            {
+                "title": ["Software Engineer", "Data Analyst"],
+                "headcount": [10, 5],
+            }
+        )
         errors = validate_dataframe(df)
         assert errors == []
 
@@ -35,49 +36,61 @@ class TestValidation:
         assert any("empty" in e.lower() for e in errors)
 
     def test_invalid_soc_code_flagged(self) -> None:
-        df = pd.DataFrame({
-            "title": ["Test Role"],
-            "soc_code": ["INVALID"],
-        })
+        df = pd.DataFrame(
+            {
+                "title": ["Test Role"],
+                "soc_code": ["INVALID"],
+            }
+        )
         errors = validate_dataframe(df)
         assert any("SOC" in e for e in errors)
 
     def test_valid_soc_code_passes(self) -> None:
-        df = pd.DataFrame({
-            "title": ["Test Role"],
-            "soc_code": ["15-1252"],
-        })
+        df = pd.DataFrame(
+            {
+                "title": ["Test Role"],
+                "soc_code": ["15-1252"],
+            }
+        )
         errors = validate_dataframe(df)
         assert errors == []
 
     def test_negative_headcount_flagged(self) -> None:
-        df = pd.DataFrame({
-            "title": ["Test Role"],
-            "headcount": [-1],
-        })
+        df = pd.DataFrame(
+            {
+                "title": ["Test Role"],
+                "headcount": [-1],
+            }
+        )
         errors = validate_dataframe(df)
         assert any("headcount" in e for e in errors)
 
     def test_percentage_out_of_range_flagged(self) -> None:
-        df = pd.DataFrame({
-            "title": ["Test Role"],
-            "gender_pct_female": [1.5],
-        })
+        df = pd.DataFrame(
+            {
+                "title": ["Test Role"],
+                "gender_pct_female": [1.5],
+            }
+        )
         errors = validate_dataframe(df)
         assert any("gender_pct_female" in e for e in errors)
 
     def test_invalid_education_flagged(self) -> None:
-        df = pd.DataFrame({
-            "title": ["Test Role"],
-            "education_mode": ["PhD"],  # Should be "Doctorate"
-        })
+        df = pd.DataFrame(
+            {
+                "title": ["Test Role"],
+                "education_mode": ["PhD"],  # Should be "Doctorate"
+            }
+        )
         errors = validate_dataframe(df)
         assert any("education_mode" in e for e in errors)
 
     def test_blank_title_flagged(self) -> None:
-        df = pd.DataFrame({
-            "title": ["", "Valid Title"],
-        })
+        df = pd.DataFrame(
+            {
+                "title": ["", "Valid Title"],
+            }
+        )
         errors = validate_dataframe(df)
         assert any("blank" in e.lower() for e in errors)
 
@@ -108,6 +121,7 @@ class TestParser:
 
     def test_role_soc_major_group(self) -> None:
         from aedm.models.schemas import Role
+
         role = Role(role_id="X", title="Test", soc_code="15-1252")
         assert role.soc_major_group == "15-0000"
 
@@ -135,12 +149,14 @@ class TestOnetMapper:
 
     def test_map_roles_preserves_existing_soc(self) -> None:
         from aedm.models.schemas import Role
+
         roles = [Role(role_id="X", title="Test", soc_code="15-1252")]
         mapped = map_roles(roles)
         assert mapped[0].soc_code == "15-1252"
 
     def test_map_roles_fills_missing_soc(self) -> None:
         from aedm.models.schemas import Role
+
         roles = [Role(role_id="X", title="Financial Analyst")]
         mapped = map_roles(roles)
         assert mapped[0].soc_code == "13-2051"
