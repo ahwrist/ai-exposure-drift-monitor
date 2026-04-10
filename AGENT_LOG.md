@@ -166,3 +166,32 @@
 - Used `Annotated[]` syntax for all CLI options (modern Typer pattern, avoids B008)
 - Added `TYPE_CHECKING` guards to avoid circular imports in `cli.py` and `onet_mapper.py`
 - All formatting applied via `ruff format` (18 files reformatted)
+
+## Phase 7: Notebook & Documentation Polish
+
+**Status:** Complete
+**Files created:**
+- `notebooks/walkthrough.ipynb` — Narrative demo notebook (37 cells: 19 markdown + 18 code, all executed with outputs)
+
+**Notebook contents:**
+1. Setup and imports with structlog silencing for clean output
+2. Data loading: parse Acme Corp sample CSV (200 roles), SOC code mapping, reference rate loading
+3. Exposure scoring: org mean (50.4%), tier distribution, top 10 most exposed roles, department breakdown
+4. Visualizations: exposure distribution histogram, department heatmap (both interactive Plotly)
+5. Drift detection: load 4 quarterly snapshots, compute department-level time series, run CUSUM with permutation test, drift sparklines chart
+6. Demographics: gender, education, and pay band disparity analysis with disparity bar chart
+7. Urgency scoring: composite reskill urgency for all roles, top 15 priority table, urgency matrix scatter plot
+8. Report generation: full Markdown report preview
+9. Next steps and links to documentation
+
+**Verification:**
+- All 18 code cells execute without errors
+- All internal links in README.md verified (docs/quickstart.md, docs/methodology.md, ARCHITECTURE.md, CONTRIBUTING.md, LICENSE)
+- All internal links in docs/quickstart.md verified (data_dictionary.md, methodology.md, ARCHITECTURE.md, CONTRIBUTING.md)
+- No changes to src/ or tests/
+
+**Decisions:**
+- Department-level drift analysis used in notebook instead of role-level (role-level drift is all "Stable" because reference rates are static — department-level shows composition-driven drift from headcount changes across quarters)
+- structlog configured to WARNING level to suppress info-level pipeline logging in notebook cells
+- Plotly charts shown inline (no PNG export attempted — avoids kaleido dependency)
+- Build script (`_build_walkthrough.py`) used to create notebook programmatically, then deleted after execution
