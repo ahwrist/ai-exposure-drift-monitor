@@ -11,6 +11,7 @@ from aedm.config import settings
 from aedm.models.schemas import (
     DemographicSegment,
     DriftResult,
+    ExposureRate,
     ExposureScore,
     Role,
     UrgencyScore,
@@ -345,6 +346,111 @@ def exposure_distribution(
         xaxis=dict(range=[0, 1]),
         template="plotly_white",
         font=dict(family="Inter, sans-serif", size=12),
+    )
+
+    return fig
+
+
+def coverage_gap_chart(
+    reference_rates: dict[str, ExposureRate],
+) -> go.Figure:
+    """Create a horizontal grouped bar chart of theoretical vs. observed exposure.
+
+    Args:
+        reference_rates: SOC code → ExposureRate mapping.
+
+    Returns:
+        Plotly Figure showing the AI adoption gap by occupation.
+    """
+    # Sort ascending so highest theoretical appears at top in horizontal bar chart
+    sorted_items = sorted(
+        reference_rates.items(),
+        key=lambda kv: kv[1].theoretical_exposure,
+    )
+
+    groups = [v.group_name for _, v in sorted_items]
+    theoretical = [v.theoretical_exposure for _, v in sorted_items]
+    observed = [v.observed_exposure for _, v in sorted_items]
+    gaps = [v.coverage_gap for _, v in sorted_items]
+
+    mean_gap = sum(gaps) / len(gaps) if gaps else 0
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            y=groups,
+            x=theoretical,
+            name="Theoretical Exposure",
+            orientation="h",
+            marker_color=NAVY,
+            hovertemplate="%{y}<br>Theoretical: %{x:.1%}<extra></extra>",
+        )
+    )
+
+    fig.add_trace(
+        go.Bar(
+            y=groups,
+            x=observed,
+            name="Observed Exposure",
+            orientation="h",
+            marker_color=TEAL,
+            hovertemplate="%{y}<br>Observed: %{x:.1%}<extra></extra>",
+        )
+    )
+
+    fig.add_trace(
+        go.Bar(
+            y=groups,
+            x=gaps,
+            name="Coverage Gap",
+            orientation="h",
+            marker_color=AMBER,
+            opacity=0.6,
+            hovertemplate="%{y}<br>Gap: %{x:.1%}<extra></extra>",
+        )
+    )
+
+    # Mean gap vertical line
+    fig.add_vline(
+        x=mean_gap,
+        line_dash="dash",
+        line_color=RED,
+        annotation_text=f"Mean gap: {mean_gap:.1%}",
+        annotation_position="top right",
+    )
+
+    fig.update_layout(
+        title=dict(
+            text="The AI Adoption Gap: Theoretical vs. Observed Exposure by Occupation",
+            font=dict(size=18),
+        ),
+        barmode="group",
+        xaxis_title="Exposure Rate",
+        xaxis=dict(tickformat=".0%", range=[0, 1]),
+        yaxis_title="",
+        height=750,
+        template="plotly_white",
+        font=dict(family="Inter, sans-serif", size=12),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+        ),
+        margin=dict(l=320, t=100),
+        annotations=[
+            dict(
+                text="Source: Massenkoff & McCrory (2026), Anthropic Economic Index",
+                xref="paper",
+                yref="paper",
+                x=0,
+                y=1.06,
+                showarrow=False,
+                font=dict(size=11, color="gray"),
+            ),
+        ],
     )
 
     return fig

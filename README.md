@@ -2,6 +2,7 @@
 
 **Measurement-first AI workforce intelligence. From research paper to operational tool.**
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://aedm.streamlit.app)
 [![CI](https://github.com/ahwrist/ai-exposure-drift-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/ahwrist/ai-exposure-drift-monitor/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -23,6 +24,8 @@ Research tells us AI is reshaping the workforce. But no organization has operati
 
 AEDM takes the theoretical + observed exposure framework from Anthropic's research and operationalizes it for your specific organization. Point it at a CSV of your job roles and get back:
 
+![Dashboard Screenshot](docs/screenshot.png)
+
 - **Exposure scores** per role, department, and org-wide
 - **Drift detection** showing where exposure is accelerating
 - **Demographic disparity analysis** identifying disproportionate impact
@@ -35,6 +38,10 @@ $ aedm analyze --input roles.csv --output report/
 # Launch interactive dashboard
 $ aedm dashboard --input roles.csv
 ```
+
+## Why This Project
+
+AEDM was built to bridge the gap between Anthropic's groundbreaking AI labor market research and the operational tools organizations need to act on it. It demonstrates a **research-to-tool pipeline** — taking peer-reviewed findings about AI exposure and drift and turning them into actionable workforce intelligence. The entire project was built using **agentic development with Claude Code**, following a strict CLAUDE.md-driven build order that ensures reproducibility and architectural coherence.
 
 ## Quick Start
 
