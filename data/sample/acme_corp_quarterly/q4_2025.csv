@@ -1,0 +1,105 @@
+role_id,title,soc_code,department,headcount,gender_pct_female,median_salary,education_mode,remote_pct
+R001,Software Engineer I,15-1252,Engineering,42,0.26,100000,Bachelor,0.86
+R002,Software Engineer II,15-1252,Engineering,33,0.24,120000,Bachelor,0.86
+R003,Senior Software Engineer,15-1252,Engineering,26,0.22,146000,Bachelor,0.90
+R004,Staff Software Engineer,15-1252,Engineering,10,0.19,172000,Master,0.90
+R005,Principal Software Engineer,15-1252,Engineering,4,0.16,198000,Master,0.95
+R006,Software Engineering Manager,11-9041,Engineering,8,0.23,182000,Master,0.80
+R007,Director of Engineering,11-9041,Engineering,3,0.21,218000,Master,0.76
+R009,Frontend Developer,15-1252,Engineering,19,0.29,110000,Bachelor,0.90
+R010,Backend Developer,15-1252,Engineering,24,0.22,118000,Bachelor,0.90
+R013,DevOps Engineer,15-1244,Engineering,9,0.16,132000,Bachelor,0.90
+R014,Site Reliability Engineer,15-1244,Engineering,7,0.14,142000,Bachelor,0.92
+R016,Data Scientist,15-2051,R&D,15,0.37,138000,Master,0.88
+R017,Senior Data Scientist,15-2051,R&D,9,0.34,162000,Master,0.90
+R018,Machine Learning Engineer,15-2051,Engineering,16,0.28,152000,Master,0.88
+R019,Senior ML Engineer,15-2051,Engineering,7,0.24,178000,Master,0.92
+R020,AI Research Scientist,15-2051,R&D,6,0.31,185000,Doctorate,0.85
+R021,Data Engineer,15-1252,Engineering,12,0.22,126000,Bachelor,0.88
+R023,Data Analyst,15-2051,R&D,12,0.46,81000,Bachelor,0.84
+R024,Senior Data Analyst,15-2051,R&D,6,0.43,98000,Bachelor,0.85
+R025,Business Intelligence Analyst,15-2051,Operations,5,0.40,91000,Bachelor,0.80
+R026,QA Engineer,15-1253,Engineering,9,0.30,88000,Bachelor,0.80
+R029,Security Engineer,15-1212,IT,5,0.17,141000,Bachelor,0.80
+R032,IT Support Specialist,15-1232,IT,6,0.33,57000,Associate,0.44
+R033,IT Systems Administrator,15-1244,IT,5,0.18,83000,Bachelor,0.65
+R035,Database Administrator,15-1242,IT,4,0.20,98000,Bachelor,0.75
+R038,Financial Analyst,13-2051,Finance,8,0.43,78000,Bachelor,0.70
+R039,Senior Financial Analyst,13-2051,Finance,5,0.41,98000,Bachelor,0.72
+R041,Accountant,13-2011,Finance,7,0.55,71000,Bachelor,0.66
+R042,Senior Accountant,13-2011,Finance,4,0.52,85000,Bachelor,0.68
+R044,Controller,11-3031,Finance,1,0.40,160000,Master,0.55
+R046,Accounts Payable Clerk,43-3031,Finance,3,0.73,43000,Associate,0.52
+R047,Accounts Receivable Clerk,43-3031,Finance,3,0.71,44000,Associate,0.52
+R048,Payroll Specialist,43-3051,Finance,2,0.68,54000,Associate,0.58
+R049,Tax Analyst,13-2011,Finance,3,0.45,75000,Bachelor,0.65
+R051,HR Generalist,13-1071,HR,5,0.72,65000,Bachelor,0.60
+R053,HR Manager,11-3121,HR,2,0.68,98000,Bachelor,0.55
+R054,HR Business Partner,13-1071,HR,4,0.65,88000,Bachelor,0.60
+R055,Recruiter,13-1071,HR,7,0.70,63000,Bachelor,0.76
+R058,Compensation Analyst,13-1141,HR,2,0.60,78000,Bachelor,0.65
+R060,Training Coordinator,13-1151,HR,2,0.66,54000,Bachelor,0.52
+R064,Marketing Manager,11-2021,Marketing,3,0.53,110000,Bachelor,0.72
+R066,Digital Marketing Specialist,13-1161,Marketing,5,0.56,68000,Bachelor,0.82
+R067,Content Marketing Manager,11-2021,Marketing,2,0.58,92000,Bachelor,0.85
+R068,SEO Specialist,13-1161,Marketing,2,0.48,65000,Bachelor,0.88
+R070,Marketing Analyst,13-1161,Marketing,3,0.50,71000,Bachelor,0.80
+R074,Graphic Designer,27-1024,Marketing,3,0.56,65000,Bachelor,0.82
+R075,UX Designer,27-1021,Engineering,6,0.49,98000,Bachelor,0.86
+R078,UI Designer,27-1021,Engineering,4,0.50,85000,Bachelor,0.85
+R079,Product Designer,27-1021,Engineering,5,0.47,110000,Bachelor,0.88
+R081,Product Manager,11-9041,Engineering,9,0.39,130000,Bachelor,0.80
+R082,Senior Product Manager,11-9041,Engineering,5,0.37,155000,Master,0.82
+R085,Technical Writer,27-3042,Engineering,3,0.53,75000,Bachelor,0.90
+R086,Senior Technical Writer,27-3042,Engineering,2,0.50,91000,Bachelor,0.92
+R088,Sales Representative,41-3091,Sales,19,0.39,57000,Bachelor,0.46
+R089,Senior Sales Representative,41-3091,Sales,10,0.37,75000,Bachelor,0.48
+R090,Account Executive,41-3091,Sales,12,0.35,88000,Bachelor,0.50
+R092,Sales Manager,11-2022,Sales,3,0.30,123000,Bachelor,0.50
+R095,Sales Development Representative,41-3091,Sales,13,0.42,50000,Bachelor,0.62
+R097,Sales Engineer,41-9031,Sales,6,0.16,120000,Bachelor,0.65
+R098,Customer Success Manager,11-2022,Sales,7,0.55,78000,Bachelor,0.73
+R099,Customer Support Specialist,43-4051,Operations,9,0.58,44000,Associate,0.70
+R103,Paralegal,23-2011,Legal,3,0.78,60000,Associate,0.56
+R105,Corporate Counsel,23-1011,Legal,3,0.46,170000,Doctorate,0.60
+R108,Legal Operations Specialist,23-2011,Legal,2,0.60,68000,Bachelor,0.58
+R110,Compliance Analyst,13-1041,Legal,3,0.52,75000,Bachelor,0.62
+R112,Project Manager,13-1111,Operations,7,0.43,91000,Bachelor,0.72
+R113,Senior Project Manager,13-1111,Operations,4,0.40,111000,Bachelor,0.70
+R116,Business Analyst,13-1111,Operations,6,0.44,78000,Bachelor,0.76
+R118,Operations Manager,11-1021,Operations,2,0.35,98000,Bachelor,0.50
+R122,Executive Assistant,43-6011,Executive,3,0.88,60000,Associate,0.56
+R123,Administrative Assistant,43-6014,Operations,6,0.83,41000,High School,0.42
+R125,Receptionist,43-4171,Operations,2,0.85,36000,High School,0.05
+R126,Facilities Manager,37-1012,Operations,2,0.25,75000,Bachelor,0.10
+R128,Maintenance Technician,49-9071,Operations,4,0.08,47000,High School,0.00
+R130,Security Guard,33-9032,Operations,6,0.18,39000,High School,0.00
+R132,Warehouse Worker,53-7065,Operations,7,0.22,37000,High School,0.00
+R134,Shipping and Receiving Clerk,43-5071,Operations,3,0.30,39000,High School,0.00
+R136,Procurement Specialist,13-1023,Operations,4,0.42,68000,Bachelor,0.55
+R138,Supply Chain Analyst,13-1081,Operations,3,0.40,71000,Bachelor,0.60
+R140,Data Entry Clerk,43-9021,Operations,3,0.66,35000,High School,0.52
+R141,Document Control Specialist,43-9061,Operations,1,0.60,43000,Associate,0.48
+R142,Copywriter,27-3043,Marketing,3,0.58,63000,Bachelor,0.85
+R144,Public Relations Specialist,27-3031,Marketing,3,0.62,65000,Bachelor,0.70
+R147,Research Scientist,19-1042,R&D,5,0.38,115000,Doctorate,0.70
+R150,Lab Technician,19-4021,R&D,3,0.45,50000,Associate,0.05
+R152,Solutions Architect,15-1299,Engineering,6,0.15,162000,Master,0.82
+R155,Scrum Master,15-1299,Engineering,4,0.35,98000,Bachelor,0.80
+R159,Systems Analyst,15-1211,IT,4,0.32,85000,Bachelor,0.72
+R163,Web Developer,15-1254,Engineering,5,0.30,88000,Bachelor,0.88
+R165,Embedded Systems Engineer,15-1252,Engineering,4,0.12,125000,Bachelor,0.60
+R169,Information Security Analyst,15-1212,IT,4,0.21,102000,Bachelor,0.78
+R172,Customer Experience Analyst,13-1161,Operations,3,0.55,65000,Bachelor,0.72
+R176,Technical Recruiter,13-1071,HR,4,0.62,71000,Bachelor,0.80
+R187,Proposal Writer,27-3042,Sales,2,0.55,65000,Bachelor,0.80
+R188,Pricing Analyst,13-2051,Finance,2,0.42,75000,Bachelor,0.70
+R190,Risk Analyst,13-2051,Finance,2,0.38,85000,Bachelor,0.65
+R193,Environmental Health & Safety Specialist,19-5011,Operations,2,0.35,71000,Bachelor,0.15
+R195,Change Management Specialist,13-1111,Operations,2,0.50,81000,Bachelor,0.65
+R196,Process Improvement Analyst,13-1111,Operations,2,0.42,75000,Bachelor,0.68
+R201,AI Operations Analyst,15-2051,Engineering,5,0.42,110000,Master,0.85
+R202,Content AI Specialist,15-1252,Marketing,3,0.50,95000,Bachelor,0.88
+R203,AI Ethics Coordinator,13-1199,Legal,2,0.55,95000,Master,0.72
+R204,Prompt Engineer,15-1252,Engineering,4,0.35,120000,Bachelor,0.92
+R205,AI Integration Developer,15-1252,Engineering,3,0.28,128000,Bachelor,0.88

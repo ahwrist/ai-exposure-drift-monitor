@@ -1,0 +1,141 @@
+{
+  "metadata": {
+    "source": "Massenkoff & McCrory (2026). Labor Market Impacts of AI: A New Measure and Early Evidence. Anthropic.",
+    "retrieved": "2026-03-15",
+    "notes": "Rates represent SOC major group aggregates from published figures. Theoretical exposure derived from O*NET task-level analysis. Observed exposure from Anthropic Economic Index (Claude usage data)."
+  },
+  "rates": {
+    "11-0000": {
+      "group_name": "Management",
+      "theoretical_exposure": 0.913,
+      "observed_exposure": 0.18,
+      "coverage_gap": 0.733
+    },
+    "13-0000": {
+      "group_name": "Business and Financial Operations",
+      "theoretical_exposure": 0.943,
+      "observed_exposure": 0.20,
+      "coverage_gap": 0.743
+    },
+    "15-0000": {
+      "group_name": "Computer and Mathematical",
+      "theoretical_exposure": 0.940,
+      "observed_exposure": 0.33,
+      "coverage_gap": 0.610
+    },
+    "17-0000": {
+      "group_name": "Architecture and Engineering",
+      "theoretical_exposure": 0.874,
+      "observed_exposure": 0.15,
+      "coverage_gap": 0.724
+    },
+    "19-0000": {
+      "group_name": "Life, Physical, and Social Science",
+      "theoretical_exposure": 0.895,
+      "observed_exposure": 0.17,
+      "coverage_gap": 0.725
+    },
+    "21-0000": {
+      "group_name": "Community and Social Service",
+      "theoretical_exposure": 0.820,
+      "observed_exposure": 0.09,
+      "coverage_gap": 0.730
+    },
+    "23-0000": {
+      "group_name": "Legal",
+      "theoretical_exposure": 0.935,
+      "observed_exposure": 0.22,
+      "coverage_gap": 0.715
+    },
+    "25-0000": {
+      "group_name": "Educational Instruction and Library",
+      "theoretical_exposure": 0.870,
+      "observed_exposure": 0.14,
+      "coverage_gap": 0.730
+    },
+    "27-0000": {
+      "group_name": "Arts, Design, Entertainment, Sports, and Media",
+      "theoretical_exposure": 0.852,
+      "observed_exposure": 0.19,
+      "coverage_gap": 0.662
+    },
+    "29-0000": {
+      "group_name": "Healthcare Practitioners and Technical",
+      "theoretical_exposure": 0.710,
+      "observed_exposure": 0.08,
+      "coverage_gap": 0.630
+    },
+    "31-0000": {
+      "group_name": "Healthcare Support",
+      "theoretical_exposure": 0.460,
+      "observed_exposure": 0.04,
+      "coverage_gap": 0.420
+    },
+    "33-0000": {
+      "group_name": "Protective Service",
+      "theoretical_exposure": 0.520,
+      "observed_exposure": 0.05,
+      "coverage_gap": 0.470
+    },
+    "35-0000": {
+      "group_name": "Food Preparation and Serving Related",
+      "theoretical_exposure": 0.310,
+      "observed_exposure": 0.02,
+      "coverage_gap": 0.290
+    },
+    "37-0000": {
+      "group_name": "Building and Grounds Cleaning and Maintenance",
+      "theoretical_exposure": 0.280,
+      "observed_exposure": 0.02,
+      "coverage_gap": 0.260
+    },
+    "39-0000": {
+      "group_name": "Personal Care and Service",
+      "theoretical_exposure": 0.490,
+      "observed_exposure": 0.04,
+      "coverage_gap": 0.450
+    },
+    "41-0000": {
+      "group_name": "Sales and Related",
+      "theoretical_exposure": 0.810,
+      "observed_exposure": 0.13,
+      "coverage_gap": 0.680
+    },
+    "43-0000": {
+      "group_name": "Office and Administrative Support",
+      "theoretical_exposure": 0.885,
+      "observed_exposure": 0.21,
+      "coverage_gap": 0.675
+    },
+    "45-0000": {
+      "group_name": "Farming, Fishing, and Forestry",
+      "theoretical_exposure": 0.350,
+      "observed_exposure": 0.02,
+      "coverage_gap": 0.330
+    },
+    "47-0000": {
+      "group_name": "Construction and Extraction",
+      "theoretical_exposure": 0.340,
+      "observed_exposure": 0.03,
+      "coverage_gap": 0.310
+    },
+    "49-0000": {
+      "group_name": "Installation, Maintenance, and Repair",
+      "theoretical_exposure": 0.450,
+      "observed_exposure": 0.05,
+      "coverage_gap": 0.400
+    },
+    "51-0000": {
+      "group_name": "Production",
+      "theoretical_exposure": 0.420,
+      "observed_exposure": 0.04,
+      "coverage_gap": 0.380
+    },
+    "53-0000": {
+      "group_name": "Transportation and Material Moving",
+      "theoretical_exposure": 0.380,
+      "observed_exposure": 0.03,
+      "coverage_gap": 0.350
+    }
+  }
+}
