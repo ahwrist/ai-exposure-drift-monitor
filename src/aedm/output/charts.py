@@ -38,77 +38,113 @@ def exposure_heatmap(
     roles: list[Role],
     scores: list[ExposureScore],
     metric: str = "blended",
-    title: str = "AI Exposure by Department and Role",
+    title: str = "AI Exposure by Department — Role Count per Tier",
 ) -> go.Figure:
-    """Create a department × exposure heatmap.
+    """Create a department × exposure-tier headcount heatmap.
+
+    Each cell shows how many roles in a department fall into a given
+    exposure tier (Critical/High/Moderate/Low).  Hover reveals the
+    specific role titles in that cell.
 
     Args:
         roles: List of Role objects.
         scores: Corresponding ExposureScore objects.
-        metric: Which score to display — "blended", "theoretical", or "observed".
+        metric: Which score to use for tier assignment —
+                "blended", "theoretical", or "observed".
         title: Chart title.
 
     Returns:
         Plotly Figure object.
     """
+    tier_labels = [
+        "Critical (\u226575%)",
+        "High (50-74%)",
+        "Moderate (25-49%)",
+        "Low (<25%)",
+    ]
+
+    def _tier_index(value: float) -> int:
+        if value >= 0.75:
+            return 0
+        if value >= 0.50:
+            return 1
+        if value >= 0.25:
+            return 2
+        return 3
+
     score_map = {s.role_id: s for s in scores}
 
-    # Group by department
-    dept_data: dict[str, list[tuple[str, float, int]]] = {}
+    # Group roles by department → tier
+    dept_tier_roles: dict[str, list[list[str]]] = {}
+    dept_score_sums: dict[str, tuple[float, int]] = {}
     for role in roles:
         score = score_map.get(role.role_id)
         if score is None:
             continue
         dept = role.department
-        if dept not in dept_data:
-            dept_data[dept] = []
         score_value: float = getattr(score, metric, score.blended)
-        dept_data[dept].append((role.title, score_value, role.headcount))
+        if dept not in dept_tier_roles:
+            dept_tier_roles[dept] = [[] for _ in tier_labels]
+            dept_score_sums[dept] = (0.0, 0)
+        dept_tier_roles[dept][_tier_index(score_value)].append(role.title)
+        total, count = dept_score_sums[dept]
+        dept_score_sums[dept] = (total + score_value, count + 1)
 
-    # Sort departments by mean exposure
-    dept_means = {dept: sum(s for _, s, _ in data) / len(data) for dept, data in dept_data.items()}
-    sorted_depts = sorted(dept_means, key=lambda d: dept_means[d], reverse=True)
+    # Sort departments by mean exposure descending
+    sorted_depts = sorted(
+        dept_tier_roles,
+        key=lambda d: dept_score_sums[d][0] / dept_score_sums[d][1],
+        reverse=True,
+    )
+
+    # Build z (counts) and hover text matrices
+    z_values: list[list[int]] = []
+    hover_texts: list[list[str]] = []
+    for dept in sorted_depts:
+        z_row: list[int] = []
+        hover_row: list[str] = []
+        for tier_idx, tier_label in enumerate(tier_labels):
+            role_titles = dept_tier_roles[dept][tier_idx]
+            count = len(role_titles)
+            z_row.append(count)
+            roles_list = ", ".join(sorted(role_titles)) if role_titles else "(none)"
+            hover_row.append(
+                f"<b>{dept}</b><br>"
+                f"Tier: {tier_label}<br>"
+                f"Roles: {count}<br>"
+                f"Titles: {roles_list}"
+            )
+        z_values.append(z_row)
+        hover_texts.append(hover_row)
 
     fig = go.Figure()
 
-    for dept in sorted_depts:
-        entries = sorted(dept_data[dept], key=lambda x: -x[1])[:10]  # Top 10 per dept
-        for role_title, blended, headcount in entries:
-            fig.add_trace(
-                go.Bar(
-                    name=dept,
-                    x=[blended],
-                    y=[f"{dept} | {role_title}"],
-                    orientation="h",
-                    marker_color=TIER_COLORS.get(
-                        "Critical"
-                        if blended >= 0.75
-                        else "High"
-                        if blended >= 0.5
-                        else "Moderate"
-                        if blended >= 0.25
-                        else "Low",
-                        GRAY,
-                    ),
-                    hovertemplate=(
-                        f"<b>{role_title}</b><br>"
-                        f"Department: {dept}<br>"
-                        f"Exposure: {blended:.2%}<br>"
-                        f"Headcount: {headcount}<extra></extra>"
-                    ),
-                    showlegend=False,
-                )
-            )
+    fig.add_trace(
+        go.Heatmap(
+            z=z_values,
+            x=tier_labels,
+            y=sorted_depts,
+            hovertext=hover_texts,
+            hovertemplate="%{hovertext}<extra></extra>",
+            texttemplate="%{z}",
+            colorscale=[
+                [0.0, "#F0F0F0"],
+                [1.0, "#1B2A4A"],
+            ],
+            zmin=0,
+            colorbar=dict(title="Role Count"),
+            xgap=3,
+            ygap=3,
+        )
+    )
 
     fig.update_layout(
         title=title,
-        xaxis_title=f"{metric.title()} Exposure Score",
-        xaxis=dict(range=[0, 1], tickformat=".0%"),
-        yaxis=dict(autorange="reversed"),
-        height=max(400, len(sorted_depts) * 120),
+        xaxis_title="Exposure Tier",
+        yaxis_title="Department",
+        height=max(400, len(sorted_depts) * 60 + 200),
         template="plotly_white",
         font=dict(family="Inter, sans-serif", size=12),
-        margin=dict(l=250),
     )
 
     return fig
@@ -193,30 +229,50 @@ def demographic_disparity_bars(
 
     segment_types = sorted(set(s.segment_type for s in segments))
 
+    # Distinct base color per segment type
+    segment_base_colors: dict[str, str] = {
+        "gender": TEAL,
+        "education": AMBER,
+        "pay_band": NAVY,
+    }
+
     for seg_type in segment_types:
         type_segments = [s for s in segments if s.segment_type == seg_type]
         type_segments.sort(key=lambda s: s.disparity_ratio, reverse=True)
 
-        labels = [s.segment_value for s in type_segments]
-        ratios = [s.disparity_ratio for s in type_segments]
-        colors = [RED if s.flagged else TEAL for s in type_segments]
+        base_color = segment_base_colors.get(seg_type, GRAY)
+        pretty_name = seg_type.replace("_", " ").title()
 
-        fig.add_trace(
-            go.Bar(
-                name=seg_type.replace("_", " ").title(),
-                x=labels,
-                y=ratios,
-                marker_color=colors,
-                hovertemplate=[
-                    f"<b>{label}</b> ({seg_type})<br>"
-                    f"Disparity Ratio: {ratio:.2f}x<br>"
-                    f"Mean Exposure: {seg.mean_exposure:.2%}<br>"
-                    f"Headcount: {seg.headcount}<br>"
-                    f"{'⚠ FLAGGED' if seg.flagged else 'Within threshold'}<extra></extra>"
-                    for label, ratio, seg in zip(labels, ratios, type_segments, strict=True)
-                ],
+        # Split into flagged / unflagged groups for distinct legend entries
+        flagged = [s for s in type_segments if s.flagged]
+        unflagged = [s for s in type_segments if not s.flagged]
+
+        for group, color, suffix in [
+            (unflagged, base_color, ""),
+            (flagged, RED, " (flagged)"),
+        ]:
+            if not group:
+                continue
+            labels = [s.segment_value for s in group]
+            ratios = [s.disparity_ratio for s in group]
+            fig.add_trace(
+                go.Bar(
+                    name=f"{pretty_name}{suffix}",
+                    x=labels,
+                    y=ratios,
+                    marker_color=color,
+                    legendgroup=seg_type,
+                    hovertemplate=[
+                        f"<b>{s.segment_value}</b> ({seg_type})<br>"
+                        f"Disparity Ratio: {s.disparity_ratio:.2f}x<br>"
+                        f"Mean Exposure: {s.mean_exposure:.2%}<br>"
+                        f"Headcount: {s.headcount}<br>"
+                        f"{'⚠ FLAGGED' if s.flagged else 'Within threshold'}"
+                        "<extra></extra>"
+                        for s in group
+                    ],
+                )
             )
-        )
 
     # Add threshold line
     fig.add_hline(
